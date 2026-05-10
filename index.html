@@ -28,20 +28,18 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 .badge.hvac{background:var(--a)}
 .badge.estructuras{background:var(--g)}
 .badge.naval{background:var(--p)}
+.badge.gestion{background:#6f42c1}
 .badge.corta{background:#e8f5e9;color:#2e7d32}
 .badge.larga{background:#e3f2fd;color:#1565c0}
 .badge.borrador{background:var(--w);color:#333}
-.badge.listo{background:var(--g)}
 .fecha{color:#999;font-size:.75rem;margin-left:auto}
-.post-content h1{color:var(--p);font-size:1.4rem;margin:0 0 12px;line-height:1.3}
-.post-content h2{color:var(--s);font-size:1.15rem;margin:20px 0 8px}
-.post-content h3{color:var(--s);font-size:1rem;margin:16px 0 6px}
+.post-content h1{color:var(--p);font-size:1.35rem;margin:0 0 12px;line-height:1.3}
+.post-content h2{color:var(--s);font-size:1.1rem;margin:20px 0 8px}
+.post-content h3{color:var(--s);font-size:.95rem;margin:16px 0 6px}
 .post-content p{margin-bottom:10px;text-align:justify}
 .post-content ul,.post-content ol{margin:8px 0 12px 24px}
-.post-content li{margin-bottom:4px}
+.post-content li{margin-bottom:5px}
 .post-content strong{color:var(--p)}
-.post-content pre{background:#f8f9fa;border:1px solid var(--border);border-radius:6px;padding:14px;overflow-x:auto;font-size:.82rem;margin:10px 0;line-height:1.5}
-.post-content code{background:#f0f0f0;padding:2px 6px;border-radius:3px;font-size:.85em}
 .post-content table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
 .post-content th{background:var(--p);color:#fff;padding:8px 10px;text-align:left;font-size:.8rem}
 .post-content td{padding:7px 10px;border-bottom:1px solid var(--border)}
@@ -62,9 +60,9 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 <body>
 
 <div class="header">
-<h1>📱 Panel de Contenido LinkedIn</h1>
-<p>Perfil personal de Jherson — Ingeniero HVAC-R · Estructuras Metálicas · Ingeniería Naval</p>
-<p class="subtitle">Meta: 10 publicaciones/semana · Lun-Vie · 2/día (9:00 AM corta + 4:00 PM larga)</p>
+<h1>📱 Panel de Contenido LinkedIn — Técnico</h1>
+<p>Perfil personal de Jherson · Ingeniería · Tips · Normas · Gestión de Proyectos</p>
+<p class="subtitle">Meta: 10 publicaciones/semana · Lun-Vie · 9:00 AM (corta) + 4:00 PM (larga)</p>
 </div>
 
 <div class="nav">
@@ -87,28 +85,30 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 <span class="fecha">2026-05-10</span>
 </div>
 <div class="post-content">
-<h1>El cobre está perdiendo la guerra en HVAC. Y nadie está hablando lo suficiente de esto.</h1>
+<h1>3 errores comunes en el cálculo de carga térmica que inflan tus proyectos</h1>
 
-<p>Llevo años trabajando en climatización industrial y hay un cambio del que casi nadie habla: la transición aluminio-cobre en la fabricación de equipos ya no es futura, es presente.</p>
+<p>Llevo años revisando proyectos de climatización y estos errores se repiten una y otra vez:</p>
 
-<p>Los fabricantes están migrando componentes clave hacia aleaciones de aluminio para reducir costos de producción entre un 15-20% sin sacrificar eficiencia térmica. Samsung ya lidera esta carrera con soluciones que integran IA y nuevos materiales.</p>
+<h3>1. No considerar la radiación solar directa por orientación</h3>
+<p>Muchos cálculos usan valores genéricos de ganancia solar. Pero la diferencia entre una fachada orientada al norte y una al oeste en Lima puede ser de 300-400 W/m² en horas pico. Usar un valor promedio te subestima la carga y el equipo queda corto.</p>
+<p><strong>Tip:</strong> Usa la tabla de irradiancia solar por orientación del SENAHMI o los datos de Meteonorm. No uses el mismo valor para todas las fachadas.</p>
 
-<h3>¿Por qué debería importarte?</h3>
+<h3>2. Ignorar la carga latente de ocupantes</h3>
+<p>En proyectos comerciales (restaurantes, centros de salud, gimnasios), la carga latente por ocupantes puede representar el 25-35% de la carga total. Si solo calculas carga sensible, el equipo deshumidifica mal y la calidad de aire interior se deteriora.</p>
+<p><strong>Tip:</strong> Aplica los valores de ASHRAE 62.1 para tasas de ventilación y los factores de calor latente por actividad (tabla 1, Cap. 18, ASHRAE Fundamentals).</p>
 
-<p>En un mercado donde el precio de los equipos sube cada trimestre (ACHR News reportó incrementos en mayo 2026), la eficiencia en manufactura no es opcional.</p>
+<h3>3. Sobredimensionar "por seguridad"</h3>
+<p>Poner 20-30% más de capacidad "por si acaso" es más costoso de lo que parece: equipos más caros, ductos más grandes, mayor consumo eléctrico, y ciclos de encendido/apagado más frecuentes que reducen la vida útil.</p>
+<p><strong>Tip:</strong> Haz el cálculo bien hecho con HAP o TRACE 700, aplica factores de seguridad razonables (10-15%), y confía en los números.</p>
 
-<p>En los proyectos que he participado en Perú, veo cómo estas decisiones de fábrica impactan directamente en el costo final para el cliente. Un equipo más eficiente de fabricar debería significar mejor precio... pero solo si la cadena de valor traslada esos ahorros.</p>
+<p>¿Cuál de estos errores has visto más seguido en campo?</p>
 
-<h3>La pregunta incómoda</h3>
-
-<p>¿Estamos como técnicos e ingenieros preparados para mantener y dar servicio a equipos con estos nuevos materiales? La capacitación técnica no avanza al mismo ritmo que la innovación en fábrica.</p>
-
-<p><strong>#HVAC #Climatización #Ingeniería #EficienciaEnergética #Innovación</strong></p>
+<p><strong>#HVAC #Ingeniería #Climatización #CargaTérmica #ASHRAE #DiseñoHVAC</strong></p>
 </div>
 <div class="prompt-section">
 <h3>🖼️ Prompt para generar imagen</h3>
-<div class="prompt-box">A split-view industrial HVAC manufacturing scene: on the left side, traditional copper tubing and components in warm copper tones; on the right side, modern aluminum alloy components in sleek silver tones with blue LED indicators and AI-connected sensors. The transition zone in the middle shows the materials merging. Clean factory background, professional technical lighting, photorealistic style, 16:9 aspect ratio, high detail.</div>
-<div class="prompt-meta">Estilo: Fotorrealista industrial · Proporción: 16:9 · Elementos: Cobre vs Aluminio, tecnología IA, fábrica moderna</div>
+<div class="prompt-box">A technical engineering desk with an open ASHRAE handbook showing thermal load calculation tables, a laptop running HAP software with building load analysis charts, architectural blueprints with solar orientation arrows marked on facades, and a psychrometric chart pinned to the wall. Warm desk lamp lighting, professional engineering workspace, photorealistic style, 16:9 aspect ratio, high detail.</div>
+<div class="prompt-meta">Estilo: Fotorrealista profesional · Proporción: 16:9 · Elementos: Manual ASHRAE, software HAP, planos con orientación solar, diagrama psicrométrico</div>
 </div>
 </div>
 
@@ -121,58 +121,58 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 <span class="fecha">2026-05-10</span>
 </div>
 <div class="post-content">
-<h1>La ingeniería de estructuras metálicas en 2026: normas que cambian el juego y software que lo hace posible</h1>
+<h1>Diseño de conexiones en estructuras metálicas: lo que las normas no te dicen explícitamente</h1>
 
-<p>Diseñar una estructura metálica hoy no es lo mismo que hace 5 años. Y no es solo por los materiales: es porque todo el ecosistema normativo, computacional y de verificación se transformó.</p>
+<p>He revisado cientos de planos de conexiones soldadas y atornilladas, y hay un patrón que se repite: diseñamos para que "cumpla norma", pero no para que sea eficiente de fabricar ni de montar en obra.</p>
 
-<p>He visto cómo en Perú seguimos diseñando con métodos simplificados mientras el resto del mundo ya migró a herramientas más potentes. No por falta de capacidad, sino por inercia.</p>
+<h2>El problema de diseñar solo "por norma"</h2>
 
-<h2>Normas y estándares que están marcando el ritmo</h2>
+<p>La AISC 360-22 y el AISC Steel Construction Manual te dan los criterios de resistencia. Pero no te dicen que esa conexión con 14 pernos M24 en 4 filas va a costar el doble de fabricar que una con 8 pernos bien distribuidos. Tampoco te advierten que el soldador en obra va a tener que soldar en posición vertical porque no pensaste en la secuencia de montaje.</p>
 
-<p><strong>AISC 360-22</strong> (Specification for Structural Steel Buildings) — La actualización más reciente introdujo cambios significativos en el diseño por factores de resistencia y carga (LRFD), especialmente en conexiones y elementos comprimidos. Si estás diseñando con la versión anterior, estás trabajando con criterios que ya no reflejan el estado del arte.</p>
+<p>Diseñar conexiones no es solo verificar φRn ≥ Ru. Es pensar en:</p>
+<ul>
+<li>¿Cómo se fabrica esto en taller?</li>
+<li>¿Cómo se monta en obra?</li>
+<li>¿Cuánto cuesta realmente?</li>
+<li>¿Qué pasa si el montajista no puede acceder al punto de soldadura?</li>
+</ul>
 
-<p><strong>EN 1993-1-1</strong> (Eurocódigo 3) — Revisión 2025 con actualizaciones en criterios de estabilidad para perfiles esbeltos, métodos de análisis de segundo orden más refinados, y reglas de diseño para conexiones semirrígidas.</p>
+<h2>5 tips técnicos que aplico en cada conexión</h2>
 
-<p><strong>AWS D1.1/D1.5</strong> — Soldadura estructural con requerimientos de calificación más estrictos. Más inspección, más documentación, más seguridad.</p>
+<h3>1. Usa el método de componentes (Component Method) del AISC Manual</h3>
+<p>No te quedes solo con las tablas pre-calculadas. El método de componentes (Partes 7 y 9 del AISC Manual) te permite analizar conexiones atípicas con rigor. Especialmente útil para conexiones excéntricas, placas base con momentos, y vigas con cortante + torsión.</p>
 
-<p><strong>Norma Peruana E.090</strong> — Cada vez más alineada con criterios AISC y AISI. El proyectista que domina ambos mundos tiene una ventaja competitiva enorme.</p>
+<h3>2. Verifica la soldadura en el nodo, no solo en los elementos</h3>
+<p>El punto crítico no es siempre la soldadura viga-columna. Es el nodo donde convergen múltiples elementos. Aplica el método de trayectorias de fuerza (force flow paths) y verifica que la soldadura en el nodo resista la resultante de todas las fuerzas convergentes.</p>
 
-<h2>Métodos de cálculo que están ganando terreno</h2>
+<h3>3. Considera la rigidez de la conexión en el análisis global</h3>
+<p>Si modelas todo como "pinned" o "fixed" sin verificar la rigidez real de la conexión, tus resultados de desplazamientos y fuerzas internas van a ser incorrectos. Usa el modelo de resortes rotacionales del AISC Design Guide 39 o el método de componentes para definir la rigidez real.</p>
 
-<p><strong>Análisis por Elementos Finitos (FEM)</strong> como estándar. Software como IDEA StatiCa, RFEM (Dlubal) y SAP2000 permiten modelar conexiones complejas, analizar comportamiento no lineal y optimizar cantidades de acero con precisión milimétrica.</p>
+<h3>4. Diseña para el montaje, no solo para la resistencia</h3>
+<ul>
+<li>Deja mínimo 50mm entre pernos para acceso de llave de torque</li>
+<li>Usa pernos del mismo diámetro cuando sea posible (reduce errores de montaje)</li>
+<li>Evita soldaduras en posición vertical en obra (especifica soldadura en taller)</li>
+<li>Considera tolerancias de fabricación (±3mm en perfiles, ±1.5mm en placas)</li>
+</ul>
 
-<p><strong>Diseño por desempeño</strong> (Performance-Based Design) — Más allá de verificar que "cumple norma", pregunta: ¿qué le pasa a esta estructura bajo qué escenario?</p>
+<h3>5. Usa IDEA StatiCa para conexiones complejas</h3>
+<p>Para conexiones fuera de lo estándar (nudos de cerchas, conexiones con múltiples direcciones, placas base con anclajes pretensados), IDEA StatiCa con CBFEM te da resultados que el método manual no puede. Y genera el reporte de verificación listo para revisión.</p>
 
-<p><strong>BIM integrado al cálculo estructural</strong> — Con Tekla Structures y Advance Steel, el modelo BIM alimenta directamente el análisis estructural, la generación de planos de taller y la lista de materiales.</p>
+<h2>En gestión de proyectos: el costo oculto de las malas conexiones</h2>
 
-<h2>Software que todo ingeniero estructural debería conocer en 2026</h2>
+<p>En una nave industrial típica de 3,000 m² de techo, las conexiones representan entre el 15-25% del costo total de la estructura metálica. Una conexión sobredimensionada puede costar 2-3 veces más de lo necesario. Y una conexión mal detallada genera reprocesos en obra que cuestan 5-10 veces más que haberla diseñado bien desde el inicio.</p>
 
-<table>
-<tr><th>Software</th><th>Uso principal</th><th>Nivel</th></tr>
-<tr><td>Tekla Structures</td><td>Modelado BIM y detallado</td><td>Avanzado</td></tr>
-<tr><td>IDEA StatiCa</td><td>Análisis de conexiones</td><td>Especializado</td></tr>
-<tr><td>RFEM / RSTAB</td><td>Análisis FEM general</td><td>Intermedio-Avanzado</td></tr>
-<tr><td>SAP2000 / ETABS</td><td>Análisis dinámico y sísmico</td><td>Intermedio</td></tr>
-<tr><td>Advance Steel</td><td>Detallado y fabricación</td><td>Intermedio</td></tr>
-<tr><td>RAM Elements</td><td>Diseño de elementos individuales</td><td>Básico-Intermedio</td></tr>
-</table>
+<p><strong>Regla práctica:</strong> Si una conexión te toma más de 30 minutos en pensar cómo se monta, probablemente está mal diseñada.</p>
 
-<h2>La realidad peruana</h2>
+<p>¿Qué criterios usas tú para diseñar conexiones? ¿Trabajas con el método de componentes o solo con las tablas del manual?</p>
 
-<p>En Perú, la mayoría de proyectos industriales y comerciales aún se diseñan con métodos simplificados y software básico. No por falta de capacidad, sino por inercia y presupuestos ajustados.</p>
-
-<p>Pero el mercado está cambiando. Los clientes internacionales exigen normativa AISC o Eurocódigo. Los proyectos mineros requieren análisis más sofisticados. Y los competidores que dominan estas herramientas están ganando los proyectos más rentables.</p>
-
-<p><strong>La pregunta no es si necesitas actualizarte. Es cuánto tiempo puedes esperar sin hacerlo.</strong></p>
-
-<p>¿Qué software usas para diseño de estructuras metálicas? ¿Trabajas con normativa local, internacional o ambas?</p>
-
-<p><strong>#EstructurasMetálicas #IngenieríaEstructural #AISC #Eurocódigo #BIM #FEM #SoftwareEstructural #Normativa #Perú</strong></p>
+<p><strong>#EstructurasMetálicas #IngenieríaEstructural #Conexiones #AISC #DiseñoEstructural #GestiónDeProyectos #Montaje</strong></p>
 </div>
 <div class="prompt-section">
 <h3>🖼️ Prompt para generar imagen</h3>
-<div class="prompt-box">A professional engineer's desk with multiple screens showing structural engineering software: Tekla Structures 3D model of a steel frame building on the left monitor, IDEA StatiCa connection analysis with stress color maps on the center monitor, and a PDF of AISC 360-22 specifications on the right. On the desk: a steel sample, calendars with project deadlines, and architectural blueprints. Warm office lighting, modern engineering workspace, photorealistic style, 16:9 aspect ratio, high detail.</div>
-<div class="prompt-meta">Estilo: Fotorrealista profesional · Proporción: 16:9 · Elementos: Monitores con software estructural, normas AISC, muestra de acero, planos</div>
+<div class="prompt-box">A detailed technical close-up of a steel beam-to-column connection being welded on a construction site, with an engineer in safety gear inspecting the weld joint. In the foreground, a tablet showing IDEA StatiCa CBFEM stress analysis with red-yellow-green color maps on the connection. Blueprints and AISC manual pages visible on a nearby table. Industrial construction background, dramatic lighting, photorealistic style, 16:9 aspect ratio, high detail.</div>
+<div class="prompt-meta">Estilo: Fotorrealista industrial/técnico · Proporción: 16:9 · Elementos: Conexión viga-columna soldada, tablet con IDEA StatiCa, planos, manual AISC, ingeniero en obra</div>
 </div>
 </div>
 
@@ -185,38 +185,30 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 <span class="fecha">2026-05-10</span>
 </div>
 <div class="post-content">
-<h1>Estados Unidos quiere recuperar su poder naval. Y el mundo debería prestar atención.</h1>
+<h1>Gestión de proyectos navales: por qué el 70% se excede en plazo (y cómo evitarlo)</h1>
 
-<p>Sigo de cerca la industria naval hace años, y lo que está pasando ahora es histórico: Estados Unidos está reinviertiendo masivamente en su capacidad de construcción naval.</p>
+<p>He participado en proyectos de construcción y reparación naval, y las causas de los retrasos son casi siempre las mismas:</p>
 
-<p>El Gulf Coast —desde Texas hasta Florida— se está convirtiendo en el epicentro de lo que llaman el "maritime comeback" americano.</p>
+<h3>1. Falta de ingeniería de detalle temprana</h3>
+<p>Se inicia la construcción con ingeniería básica y se espera que el detalle se resuelva "sobre la marcha". Resultado: reprocesos, retrabajos, y conflictos entre sistemas que se descubren cuando ya están instalados.</p>
+<p><strong>Tip:</strong> Invierte el 20-25% del tiempo del proyecto en ingeniería de detalle ANTES de cortar el primer acero. El costo de cambiar un plano es 10x menor que cambiar una pieza ya fabricada.</p>
 
-<h3>Los números hablan solos</h3>
-<ul>
-<li>CSSC Offshore & Marine Engineering reportó un salto de ganancias del 40%+ en Q1 2026</li>
-<li>Fincantieri ganó su primer contrato con la US Navy para el programa LSM</li>
-<li>Saronic abrió oficinas en Nueva Orleans enfocadas en buques autónomos</li>
-<li>HD HHI se convirtió en la primera empresa coreana en ganar un proyecto de la Office of Naval Research</li>
-</ul>
+<h3>2. Gestión de materiales sin buffer</h3>
+<p>En proyectos navales, los materiales especiales (aceros grado naval, válvulas certificadas, cables antillama) tienen lead times de 8-16 semanas. Si no los compras con anticipación, la obra se para.</p>
+<p><strong>Tip:</strong> Crea una lista de materiales críticos (long lead items) en la fase de licitación y genera las órdenes de compra antes de iniciar construcción.</p>
 
-<h3>¿Qué está impulsando esto?</h3>
+<h3>3. Ausencia de control de avance por curva S</h3>
+<p>Sin una curva S actualizada semanalmente, no sabes si estás atrasado hasta que ya es tarde. El avance físico debe medirse en toneladas de acero montado, metros de tubería instalados, y equipos posicionados — no en "porcentaje completado" subjetivo.</p>
+<p><strong>Tip:</strong> Implementa medición de avance por entregables físicos con curva S semanal. Si estás más del 5% por debajo de la curva, activa un plan de recuperación inmediato.</p>
 
-<p><strong>1. Seguridad nacional:</strong> La necesidad de reconstruir la flota militar y comercial.</p>
-<p><strong>2. Tecnología:</strong> Buques autónomos, digitalización de astilleros, nuevos combustibles.</p>
-<p><strong>3. Alianzas estratégicas:</strong> Acuerdos globales como el de Hanwha Ocean con Canadá.</p>
+<p>¿Qué otros factores has visto que generan retrasos en proyectos navales?</p>
 
-<h3>Lo que me preocupa de Latinoamérica</h3>
-
-<p>Mientras las potencias reinvierten en su capacidad naval industrial, en nuestra región seguimos dependiendo de astilleros extranjeros. Perú, con más de 3,000 km de costa y una de las pesquerías más importantes del mundo, tiene una deuda pendiente con la ingeniería naval.</p>
-
-<p>¿Es momento de pensar en serio en nuestra propia capacidad de construcción y reparación naval?</p>
-
-<p><strong>#IngenieríaNaval #Marítimo #Buques #Shipbuilding #Offshore #Perú</strong></p>
+<p><strong>#IngenieríaNaval #GestiónDeProyectos #Shipbuilding #ConstrucciónNaval #Planificación</strong></p>
 </div>
 <div class="prompt-section">
 <h3>🖼️ Prompt para generar imagen</h3>
-<div class="prompt-box">A dramatic aerial view of a modern Gulf Coast shipyard at sunset, with massive naval vessels under construction in dry docks, cranes silhouetted against an orange sky, and in the foreground a digital holographic display showing autonomous ship blueprints and "Q1 2026 +40%" data overlays. Industrial atmosphere meets futuristic technology. Cinematic lighting, photorealistic style, 16:9 aspect ratio, high detail.</div>
-<div class="prompt-meta">Estilo: Cinematográfico épico · Proporción: 16:9 · Elementos: Astillero, buques en construcción, atardecer, holograma tecnológico</div>
+<div class="prompt-box">Aerial view of a modern shipyard with a large vessel under construction in dry dock. In the foreground, a project management office with Gantt charts and S-curve progress displays on monitors, engineering blueprints spread on a conference table, and a timeline wall showing critical path milestones. Professional industrial atmosphere, natural daylight, photorealistic style, 16:9 aspect ratio, high detail.</div>
+<div class="prompt-meta">Estilo: Fotorrealista industrial/profesional · Proporción: 16:9 · Elementos: Astillero con buque en construcción, oficina de gestión de proyectos, diagrama de Gantt, curva S, cronograma</div>
 </div>
 </div>
 
@@ -226,22 +218,24 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 <div id="calendario" class="section">
 <h2 style="margin-bottom:16px">📅 Calendario Editorial — Mayo 2026</h2>
 <div class="cal-card">
-<h3>Semana 2 (12-16 Mayo)</h3>
+<h3>Distribución semanal (10 publicaciones)</h3>
 <table>
 <tr><th>Día</th><th>9:00 AM (Corta)</th><th>4:00 PM (Larga)</th></tr>
-<tr><td>Lun 12</td><td>HVAC-R</td><td>Estructuras Metálicas</td></tr>
-<tr><td>Mar 13</td><td>Ingeniería Naval</td><td>HVAC-R</td></tr>
-<tr><td>Mié 14</td><td>Estructuras Metálicas</td><td>Ingeniería Naval</td></tr>
-<tr><td>Jue 15</td><td>HVAC-R</td><td>Estructuras Metálicas</td></tr>
-<tr><td>Vie 16</td><td>Ingeniería Naval</td><td>HVAC-R</td></tr>
+<tr><td>Lunes</td><td>HVAC-R (tips técnicos)</td><td>Estructuras Metálicas (normas/conexiones)</td></tr>
+<tr><td>Martes</td><td>Ingeniería Naval (gestión)</td><td>HVAC-R (cálculo/diseño)</td></tr>
+<tr><td>Miércoles</td><td>Estructuras Metálicas (tips)</td><td>Ingeniería Naval (construcción/repair)</td></tr>
+<tr><td>Jueves</td><td>HVAC-R (instalaciones)</td><td>Gestión de Proyectos (planificación/riesgos)</td></tr>
+<tr><td>Viernes</td><td>HVAC-R (refrigerantes/mantenimiento)</td><td>HVAC-R (comisionamiento/calidad aire)</td></tr>
 </table>
 </div>
 <div class="cal-card">
-<h3>Distribución semanal</h3>
+<h3>Enfoque del contenido</h3>
 <ul>
-<li><strong>HVAC-R:</strong> 4 publicaciones (2 cortas + 2 largas)</li>
-<li><strong>Estructuras Metálicas:</strong> 3 publicaciones (1 corta + 2 largas)</li>
-<li><strong>Ingeniería Naval:</strong> 3 publicaciones (2 cortas + 1 larga)</li>
+<li><strong>Tips técnicos:</strong> Errores comunes, soluciones prácticas, lecciones de obra</li>
+<li><strong>Normas y estándares:</strong> AISC 360-22, ASHRAE, Eurocódigo 3, AWS, IMO</li>
+<li><strong>Métodos de cálculo:</strong> FEM, carga térmica, diseño de conexiones, análisis sísmico</li>
+<li><strong>Software:</strong> HAP, TRACE 700, IDEA StatiCa, Tekla, SAP2000, RFEM</li>
+<li><strong>Gestión de proyectos:</strong> Planificación, control de avance, gestión de riesgos, costos</li>
 </ul>
 </div>
 </div>
@@ -264,7 +258,7 @@ body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--
 </div><!-- end container -->
 
 <div class="footer">
-Panel de Contenido LinkedIn — Perfil personal de Jherson · Actualizado: 2026-05-10
+Panel de Contenido LinkedIn — Perfil personal de Jherson · Técnico · Normas · Gestión · Actualizado: 2026-05-10
 </div>
 
 <script>
