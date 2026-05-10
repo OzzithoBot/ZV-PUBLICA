@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZV PERU SAC — Panel de Contenido LinkedIn</title>
+<style>
+:root{--p:#1F4E79;--s:#2F5496;--a:#4DABF7;--g:#28a745;--w:#ffc107;--r:#dc3545;--bg:#f5f7fa;--card:#fff;--text:#333;--border:#e0e0e0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.header{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;padding:28px 32px;text-align:center}
+.header h1{font-size:1.6rem;margin-bottom:6px}
+.header p{font-size:.85rem;opacity:.8}
+.header .subtitle{font-size:.75rem;opacity:.6;margin-top:4px}
+.nav{background:#fff;padding:12px 24px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.nav button{padding:8px 18px;border:2px solid var(--border);border-radius:6px;background:#fff;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s;color:var(--text)}
+.nav button:hover,.nav button.active{background:var(--p);color:#fff;border-color:var(--p)}
+.container{max-width:1100px;margin:24px auto;padding:0 16px 40px}
+.section{display:none}
+.section.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:24px}
+.stat-card{background:var(--card);border-radius:8px;padding:16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.stat-card .num{font-size:2rem;font-weight:700;color:var(--p)}
+.stat-card .label{font-size:.7rem;color:#999;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.post-card{background:var(--card);border-radius:10px;padding:28px;margin-bottom:20px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.post-header{display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+.badge{color:#fff;padding:4px 12px;border-radius:4px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge.hvac{background:var(--a)}
+.badge.estructuras{background:var(--g)}
+.badge.naval{background:var(--p)}
+.badge.corta{background:#e8f5e9;color:#2e7d32}
+.badge.larga{background:#e3f2fd;color:#1565c0}
+.badge.borrador{background:var(--w);color:#333}
+.badge.listo{background:var(--g)}
+.fecha{color:#999;font-size:.75rem;margin-left:auto}
+.post-content h1{color:var(--p);font-size:1.4rem;margin:0 0 12px;line-height:1.3}
+.post-content h2{color:var(--s);font-size:1.15rem;margin:20px 0 8px}
+.post-content h3{color:var(--s);font-size:1rem;margin:16px 0 6px}
+.post-content p{margin-bottom:10px;text-align:justify}
+.post-content ul,.post-content ol{margin:8px 0 12px 24px}
+.post-content li{margin-bottom:4px}
+.post-content strong{color:var(--p)}
+.post-content pre{background:#f8f9fa;border:1px solid var(--border);border-radius:6px;padding:14px;overflow-x:auto;font-size:.82rem;margin:10px 0;line-height:1.5}
+.post-content code{background:#f0f0f0;padding:2px 6px;border-radius:3px;font-size:.85em}
+.post-content table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.85rem}
+.post-content th{background:var(--p);color:#fff;padding:8px 10px;text-align:left;font-size:.8rem}
+.post-content td{padding:7px 10px;border-bottom:1px solid var(--border)}
+.post-content tr:nth-child(even){background:#f9f9f9}
+.prompt-section{margin-top:24px;padding:18px;background:#fff8e1;border-radius:8px;border:1px solid #ffe082}
+.prompt-section h3{color:#e65100;margin-bottom:10px;font-size:.95rem}
+.prompt-box{background:#fff3e0;border:1px solid #ffcc80;border-radius:6px;padding:14px;font-size:.82rem;white-space:pre-wrap;word-break:break-word;line-height:1.5;color:#5d4037}
+.prompt-meta{margin-top:10px;font-size:.78rem;color:#8d6e63}
+.cal-card{background:var(--card);border-radius:10px;padding:24px;margin-bottom:16px;box-shadow:0 1px 6px rgba(0,0,0,.06)}
+.cal-card h3{color:var(--p);margin-bottom:14px;font-size:1.1rem}
+.cal-card table{width:100%;border-collapse:collapse;font-size:.82rem}
+.cal-card th{background:var(--s);color:#fff;padding:8px;text-align:left;font-size:.75rem}
+.cal-card td{padding:7px 8px;border-bottom:1px solid var(--border)}
+.cal-card tr:hover{background:#f5f5f5}
+.footer{text-align:center;padding:20px;color:#999;font-size:.75rem;border-top:1px solid var(--border);margin-top:40px}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>📱 Panel de Contenido LinkedIn</h1>
+<p>ZV PERU SAC — HVAC-R · Estructuras Metálicas · Ingeniería Naval</p>
+<p class="subtitle">Meta: 10 publicaciones/semana · Lun-Vie · 2/día</p>
+</div>
+
+<div class="nav">
+<button class="active" onclick="showSection('posts',this)">📝 Publicaciones</button>
+<button onclick="showSection('calendario',this)">📅 Calendario</button>
+<button onclick="showSection('stats',this)">📊 Estadísticas</button>
+</div>
+
+<div class="container">
+
+<!-- ==================== PUBLICACIONES ==================== -->
+<div id="posts" class="section active">
+
+<!-- POST 1: HVAC-R CORTA -->
+<div class="post-card" style="border-left:4px solid var(--a)">
+<div class="post-header">
+<span class="badge hvac">HVAC-R</span>
+<span class="badge corta">Corta</span>
+<span class="badge borrador">Borrador</span>
+<span class="fecha">2026-05-10</span>
+</div>
+<div class="post-content">
+<h1>El cobre está perdiendo la guerra en HVAC. Y nadie está hablando lo suficiente de esto.</h1>
+
+<p>La transición aluminio-cobre en la fabricación de equipos de climatización ya no es una tendencia futura: es una realidad de 2026.</p>
+
+<p>Según análisis recientes del sector, los fabricantes están migrando componentes clave hacia aleaciones de aluminio para reducir costos de producción entre un 15-20% sin sacrificar eficiencia térmica. Empresas como Samsung ya lideran esta carrera con soluciones hiperconectadas que integran IA y nuevos materiales.</p>
+
+<h3>¿Por qué importa?</h3>
+
+<p>En un mercado donde el precio de los equipos sube cada trimestre (ACHR News reportó incrementos de precio en mayo 2026), la eficiencia en manufactura no es opcional: es supervivencia.</p>
+
+<p>Desde nuestra experiencia en proyectos de climatización industrial en Perú, vemos cómo estas decisiones de fabricación impactan directamente en el costo final para el cliente. Un equipo más eficiente de fabricar debería significar mejor precio de adquisición... pero solo si la cadena de valor traslada esos ahorros.</p>
+
+<h3>La pregunta incómoda</h3>
+
+<p>¿Estamos como industria preparados para mantener y dar servicio a equipos con estos nuevos materiales? La capacitación técnica no avanza al mismo ritmo que la innovación en fábrica.</p>
+
+<p><strong>#HVAC #Climatización #Ingeniería #EficienciaEnergética #Innovación #ZVPERU</strong></p>
+</div>
+<div class="prompt-section">
+<h3>🖼️ Prompt para generar imagen</h3>
+<div class="prompt-box">A split-view industrial HVAC manufacturing scene: on the left side, traditional copper tubing and components in warm copper tones; on the right side, modern aluminum alloy components in sleek silver tones with blue LED indicators and AI-connected sensors. The transition zone in the middle shows the materials merging. Clean factory background, professional technical lighting, photorealistic style, 16:9 aspect ratio, high detail.</div>
+<div class="prompt-meta">Estilo: Fotorrealista industrial · Proporción: 16:9 · Elementos: Cobre vs Aluminio, tecnología IA, fábrica moderna</div>
+</div>
+</div>
+
+<!-- POST 2: ESTRUCTURAS LARGA -->
+<div class="post-card" style="border-left:4px solid var(--g)">
+<div class="post-header">
+<span class="badge estructuras">Estructuras Metálicas</span>
+<span class="badge larga">Larga</span>
+<span class="badge borrador">Borrador</span>
+<span class="fecha">2026-05-10</span>
+</div>
+<div class="post-content">
+<h1>La ingeniería de estructuras metálicas en 2026: normas que cambian el juego y software que lo hace posible</h1>
+
+<p>Diseñar una estructura metálica hoy no es lo mismo que hace 5 años. Y no es solo por los materiales: es porque todo el ecosistema normativo, computacional y de verificación se transformó.</p>
+
+<h2>Normas y estándares que están marcando el ritmo</h2>
+
+<p><strong>AISC 360-22</strong> (Specification for Structural Steel Buildings) — La actualización más reciente introdujo cambios significativos en el diseño por factores de resistencia y carga (LRFD), especialmente en conexiones y elementos comprimidos.</p>
+
+<p><strong>EN 1993-1-1</strong> (Eurocódigo 3) — Revisión 2025 con actualizaciones en criterios de estabilidad para perfiles esbeltos, métodos de análisis de segundo orden más refinados, y reglas de diseño para conexiones semirrígidas.</p>
+
+<p><strong>AWS D1.1/D1.5</strong> — Soldadura estructural con requerimientos de calificación más estrictos. Más inspección, más documentación, más seguridad.</p>
+
+<p><strong>Norma Peruana E.090</strong> — Cada vez más alineada con criterios AISC y AISI. El proyectista que domina ambos mundos tiene una ventaja competitiva enorme.</p>
+
+<h2>Métodos de cálculo que están ganando terreno</h2>
+
+<p><strong>Análisis por Elementos Finitos (FEM)</strong> como estándar. Software como IDEA StatiCa, RFEM (Dlubal) y SAP2000 permiten modelar conexiones complejas, analizar comportamiento no lineal y optimizar cantidades de acero con precisión milimétrica.</p>
+
+<p><strong>Diseño por desempeño</strong> (Performance-Based Design) — Más allá de verificar que "cumple norma", pregunta: ¿qué le pasa a esta estructura bajo qué escenario?</p>
+
+<p><strong>BIM integrado al cálculo estructural</strong> — Con Tekla Structures y Advance Steel, el modelo BIM alimenta directamente el análisis estructural, la generación de planos de taller y la lista de materiales.</p>
+
+<h2>Software que todo ingeniero estructural debería conocer en 2026</h2>
+
+<table>
+<tr><th>Software</th><th>Uso principal</th><th>Nivel</th></tr>
+<tr><td>Tekla Structures</td><td>Modelado BIM y detallado</td><td>Avanzado</td></tr>
+<tr><td>IDEA StatiCa</td><td>Análisis de conexiones</td><td>Especializado</td></tr>
+<tr><td>RFEM / RSTAB</td><td>Análisis FEM general</td><td>Intermedio-Avanzado</td></tr>
+<tr><td>SAP2000 / ETABS</td><td>Análisis dinámico y sísmico</td><td>Intermedio</td></tr>
+<tr><td>Advance Steel</td><td>Detallado y fabricación</td><td>Intermedio</td></tr>
+<tr><td>RAM Elements</td><td>Diseño de elementos individuales</td><td>Básico-Intermedio</td></tr>
+</table>
+
+<h2>La realidad peruana</h2>
+
+<p>En Perú, la mayoría de proyectos industriales y comerciales aún se diseñan con métodos simplificados y software básico. No por falta de capacidad, sino por inercia y presupuestos ajustados.</p>
+
+<p>Pero el mercado está cambiando. Los clientes internacionales exigen normativa AISC o Eurocódigo. Los proyectos mineros requieren análisis más sofisticados. Y los competidores que dominan estas herramientas están ganando los proyectos más rentables.</p>
+
+<p><strong>La pregunta no es si necesitas actualizarte. Es cuánto tiempo puedes esperar sin hacerlo.</strong></p>
+
+<p>¿Qué software usas para diseño de estructuras metálicas? ¿Trabajas con normativa local, internacional o ambas?</p>
+
+<p><strong>#EstructurasMetálicas #IngenieríaEstructural #AISC #Eurocódigo #BIM #FEM #SoftwareEstructural #Normativa #ZVPERU #Perú</strong></p>
+</div>
+<div class="prompt-section">
+<h3>🖼️ Prompt para generar imagen</h3>
+<div class="prompt-box">A professional engineer's desk with multiple screens showing structural engineering software: Tekla Structures 3D model of a steel frame building on the left monitor, IDEA StatiCa connection analysis with stress color maps on the center monitor, and a PDF of AISC 360-22 specifications on the right. On the desk: a steel sample, calendars with project deadlines, and architectural blueprints. Warm office lighting, modern engineering workspace, photorealistic style, 16:9 aspect ratio, high detail.</div>
+<div class="prompt-meta">Estilo: Fotorrealista profesional · Proporción: 16:9 · Elementos: Monitores con software estructural, normas AISC, muestra de acero, planos</div>
+</div>
+</div>
+
+<!-- POST 3: NAVAL CORTA -->
+<div class="post-card" style="border-left:4px solid var(--p)">
+<div class="post-header">
+<span class="badge naval">Ingeniería Naval</span>
+<span class="badge corta">Corta</span>
+<span class="badge borrador">Borrador</span>
+<span class="fecha">2026-05-10</span>
+</div>
+<div class="post-content">
+<h1>Estados Unidos quiere recuperar su poder naval. Y está apostando por el Gulf Coast para lograrlo.</h1>
+
+<p>La industria de construcción naval estadounidense está viviendo un renacimiento. El Gulf Coast —desde Texas hasta Florida— se está convirtiendo en el epicentro de lo que algunos llaman el "maritime comeback" americano.</p>
+
+<h3>Los números hablan</h3>
+<ul>
+<li>CSSC Offshore & Marine Engineering reportó un salto de ganancias del 40%+ en Q1 2026</li>
+<li>Fincantieri acaba de ganar su primer contrato con la US Navy para el programa LSM</li>
+<li>Saronic abrió oficinas en Nueva Orleans enfocadas en buques autónomos</li>
+<li>HD HHI se convirtió en la primera empresa coreana en ganar un proyecto de la Office of Naval Research</li>
+</ul>
+
+<h3>¿Qué está impulsando esto?</h3>
+
+<p><strong>1. Seguridad nacional:</strong> La necesidad de reconstruir la flota militar y comercial.</p>
+<p><strong>2. Tecnología:</strong> Buques autónomos, digitalización de astilleros, nuevos combustibles.</p>
+<p><strong>3. Alianzas estratégicas:</strong> Acuerdos como el de Hanwha Ocean con Canadá para fortalecer capacidades de construcción naval.</p>
+
+<h3>La reflexión para Latinoamérica</h3>
+
+<p>Mientras las potencias reinvierten en su capacidad naval industrial, en nuestra región seguimos dependiendo de astilleros extranjeros para nuestras necesidades marítimas. Perú, con más de 3,000 km de costa y una de las pesquerías más importantes del mundo, tiene una deuda pendiente con la ingeniería naval.</p>
+
+<p>¿Es momento de pensar en serio en nuestra propia capacidad de construcción y reparación naval?</p>
+
+<p><strong>#IngenieríaNaval #Marítimo #Buques #Shipbuilding #Offshore #Descarbonización #ZVPERU #Perú</strong></p>
+</div>
+<div class="prompt-section">
+<h3>🖼️ Prompt para generar imagen</h3>
+<div class="prompt-box">A dramatic aerial view of a modern Gulf Coast shipyard at sunset, with massive naval vessels under construction in dry docks, cranes silhouetted against an orange sky, and in the foreground a digital holographic display showing autonomous ship blueprints and "Q1 2026 +40%" data overlays. Industrial atmosphere meets futuristic technology. Cinematic lighting, photorealistic style, 16:9 aspect ratio, high detail.</div>
+<div class="prompt-meta">Estilo: Cinematográfico épico · Proporción: 16:9 · Elementos: Astillero, buques en construcción, atardecer, holograma tecnológico</div>
+</div>
+</div>
+
+</div><!-- end posts -->
+
+<!-- ==================== CALENDARIO ==================== -->
+<div id="calendario" class="section">
+<h2 style="margin-bottom:16px">📅 Calendario Editorial — Mayo 2026</h2>
+<div class="cal-card">
+<h3>Semana 2 (12-16 Mayo)</h3>
+<table>
+<tr><th>Día</th><th>Hora</th><th>Sector</th><th>Tipo</th><th>Estado</th></tr>
+<tr><td>Lun 12</td><td>9:00</td><td>HVAC-R</td><td>Corta</td><td>⏳ Pendiente</td></tr>
+<tr><td>Lun 12</td><td>16:00</td><td>Estructuras Metálicas</td><td>Larga</td><td>⏳ Pendiente</td></tr>
+<tr><td>Mar 13</td><td>9:00</td><td>Ingeniería Naval</td><td>Corta</td><td>⏳ Pendiente</td></tr>
+<tr><td>Mar 13</td><td>16:00</td><td>HVAC-R</td><td>Larga</td><td>⏳ Pendiente</td></tr>
+<tr><td>Mié 14</td><td>9:00</td><td>Estructuras Metálicas</td><td>Corta</td><td>⏳ Pendiente</td></tr>
+<tr><td>Mié 14</td><td>16:00</td><td>Ingeniería Naval</td><td>Larga</td><td>⏳ Pendiente</td></tr>
+<tr><td>Jue 15</td><td>9:00</td><td>HVAC-R</td><td>Corta</td><td>⏳ Pendiente</td></tr>
+<tr><td>Jue 15</td><td>16:00</td><td>Estructuras Metálicas</td><td>Larga</td><td>⏳ Pendiente</td></tr>
+<tr><td>Vie 16</td><td>9:00</td><td>Ingeniería Naval</td><td>Corta</td><td>⏳ Pendiente</td></tr>
+<tr><td>Vie 16</td><td>16:00</td><td>HVAC-R</td><td>Larga</td><td>⏳ Pendiente</td></tr>
+</table>
+</div>
+<div class="cal-card">
+<h3>Distribución semanal</h3>
+<ul>
+<li><strong>HVAC-R:</strong> 4 publicaciones (2 cortas + 2 largas)</li>
+<li><strong>Estructuras Metálicas:</strong> 3 publicaciones (1 corta + 2 largas)</li>
+<li><strong>Ingeniería Naval:</strong> 3 publicaciones (2 cortas + 1 larga)</li>
+</ul>
+</div>
+</div>
+
+<!-- ==================== ESTADISTICAS ==================== -->
+<div id="stats" class="section">
+<h2 style="margin-bottom:16px">📊 Estadísticas</h2>
+<div class="stats">
+<div class="stat-card"><div class="num">3</div><div class="label">Publicaciones</div></div>
+<div class="stat-card"><div class="num">1</div><div class="label">HVAC-R</div></div>
+<div class="stat-card"><div class="num">1</div><div class="label">Estructuras</div></div>
+<div class="stat-card"><div class="num">1</div><div class="label">Naval</div></div>
+<div class="stat-card"><div class="num">3</div><div class="label">Borradores</div></div>
+<div class="stat-card"><div class="num">2</div><div class="label">Cortas</div></div>
+<div class="stat-card"><div class="num">1</div><div class="label">Largas</div></div>
+<div class="stat-card"><div class="num">3</div><div class="label">Con prompt img</div></div>
+</div>
+</div>
+
+</div><!-- end container -->
+
+<div class="footer">
+ZV PERU SAC — Panel de Contenido LinkedIn · Actualizado: 2026-05-10
+</div>
+
+<script>
+function showSection(id, btn) {
+document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+btn.classList.add('active');
+}
+</script>
+</body>
+</html>
