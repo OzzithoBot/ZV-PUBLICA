@@ -282,10 +282,100 @@ body {
 .pdf-area { background: #fff; }
 
 /* RESPONSIVE */
-@media (max-width: 860px) {
-  .result-card { position: static; }
-  .header h1 { font-size: 1.3rem; }
+/* ==================== ADMIN PANEL ==================== */
+.admin-fab {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 56px; height: 56px;
+  border-radius: 50%; background: var(--primary); color: #fff;
+  border: none; font-size: 1.5rem; cursor: pointer;
+  box-shadow: var(--shadow-lg); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s, background .2s;
 }
+.admin-fab:hover { transform: scale(1.1); background: var(--primary-dark); }
+
+.admin-modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.5); z-index: 2000;
+  align-items: center; justify-content: center;
+}
+.admin-modal-overlay.open { display: flex; }
+
+.admin-modal {
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: var(--shadow-lg); width: 95%; max-width: 900px;
+  max-height: 90vh; overflow-y: auto; padding: 28px;
+}
+.admin-modal h2 {
+  color: var(--primary); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+.admin-login-box {
+  max-width: 360px; margin: 40px auto; text-align: center;
+}
+.admin-login-box input[type="password"] {
+  width: 100%; padding: 12px 16px; border: 2px solid var(--border);
+  border-radius: 8px; font-size: 1rem; margin-bottom: 12px;
+}
+.admin-login-box input:focus { outline: none; border-color: var(--primary); }
+
+.admin-tabs {
+  display: flex; gap: 4px; margin-bottom: 20px;
+  border-bottom: 2px solid var(--border); padding-bottom: 0;
+}
+.admin-tab {
+  padding: 10px 18px; border: none; background: none;
+  font-size: .9rem; font-weight: 600; cursor: pointer;
+  color: var(--text-sec); border-bottom: 3px solid transparent;
+  margin-bottom: -2px; transition: all .2s;
+}
+.admin-tab:hover { color: var(--primary); }
+.admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+.admin-tab-content { display: none; }
+.admin-tab-content.active { display: block; }
+
+.admin-table {
+  width: 100%; border-collapse: collapse; font-size: .85rem;
+  margin-bottom: 16px;
+}
+.admin-table th {
+  background: var(--primary); color: #fff;
+  padding: 10px 8px; text-align: left; font-weight: 600;
+}
+.admin-table td {
+  padding: 8px; border: 1px solid var(--border);
+  vertical-align: middle;
+}
+.admin-table tr:hover { background: var(--primary-light); }
+.admin-table .actions { display: flex; gap: 4px; }
+
+.admin-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  margin-bottom: 16px;
+}
+.admin-form-grid .form-group { margin-bottom: 0; }
+.admin-form-grid .form-group.full { grid-column: 1 / -1; }
+
+.admin-actions-bar {
+  display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap;
+}
+
+.admin-badge {
+  display: inline-block; padding: 2px 8px; border-radius: 12px;
+  font-size: .72rem; font-weight: 600;
+}
+.admin-badge.split { background: #e3f2fd; color: #1565c0; }
+.admin-badge.fancoil { background: #fce4ec; color: #c62828; }
+.admin-badge.material { background: #f3e5f5; color: #7b1fa2; }
+
+@media (max-width: 600px) {
+  .admin-form-grid { grid-template-columns: 1fr; }
+  .admin-table { font-size: .75rem; }
+  .admin-table th, .admin-table td { padding: 6px 4px; }
+}
+
 
 /* ANIMATIONS */
 @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
@@ -1209,6 +1299,491 @@ async function exportarPDF() {
 }
 
 // ============================================================
+// ADMIN PANEL
+// ============================================================
+const ADMIN_PASS_KEY = 'hvac_admin_pass';
+const ADMIN_SESSION_KEY = 'hvac_admin_session';
+const MATERIALES_KEY = 'hvac_materiales';
+
+// Contraseña por defecto
+function getAdminPass() {
+  return localStorage.getItem(ADMIN_PASS_KEY) || 'zvperu2026';
+}
+function setAdminPass(p) {
+  localStorage.setItem(ADMIN_PASS_KEY, p);
+}
+function isAdminLoggedIn() {
+  return sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
+}
+function setAdminSession(v) {
+  if (v) sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+  else sessionStorage.removeItem(ADMIN_SESSION_KEY);
+}
+
+// Materiales (DB local)
+function getMateriales() {
+  try {
+    const raw = localStorage.getItem(MATERIALES_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  // Materiales por defecto
+  const defaults = [
+    { id: 'ducto-galv', nombre: 'Ducto galvanizado', unidad: 'kg', precio_unitario: 3.50, categoria: 'Ductos' },
+    { id: 'aislamiento-foil', nombre: 'Aislamiento fibra vidrio con foil', unidad: 'm2', precio_unitario: 12.00, categoria: 'Aislamiento' },
+    { id: 'tuberia-cobre-1/4', nombre: 'Tubería cobre 1/4"', unidad: 'm', precio_unitario: 18.00, categoria: 'Tubería cobre' },
+    { id: 'tuberia-cobre-3/8', nombre: 'Tubería cobre 3/8"', unidad: 'm', precio_unitario: 25.00, categoria: 'Tubería cobre' },
+    { id: 'tuberia-cobre-1/2', nombre: 'Tubería cobre 1/2"', unidad: 'm', precio_unitario: 35.00, categoria: 'Tubería cobre' },
+    { id: 'cable-12', nombre: 'Cable eléctrico 12 AWG', unidad: 'm', precio_unitario: 2.50, categoria: 'Eléctrico' },
+    { id: 'cable-10', nombre: 'Cable eléctrico 10 AWG', unidad: 'm', precio_unitario: 4.00, categoria: 'Eléctrico' },
+    { id: 'soporte-angulo', nombre: 'Soporte angular galvanizado', unidad: 'und', precio_unitario: 8.50, categoria: 'Soportería' },
+    { id: 'difusor', nombre: 'Difusor de aire', unidad: 'und', precio_unitario: 45.00, categoria: 'Accesorios' },
+    { id: 'rejilla', nombre: 'Rejilla de retorno', unidad: 'und', precio_unitario: 35.00, categoria: 'Accesorios' },
+    { id: 'refrigerante-r410', nombre: 'Refrigerante R-410A', unidad: 'kg', precio_unitario: 85.00, categoria: 'Refrigerante' },
+    { id: 'refrigerante-r32', nombre: 'Refrigerante R-32', unidad: 'kg', precio_unitario: 95.00, categoria: 'Refrigerante' },
+  ];
+  saveMateriales(defaults);
+  return defaults;
+}
+function saveMateriales(arr) {
+  localStorage.setItem(MATERIALES_KEY, JSON.stringify(arr));
+}
+
+// Equipos (DB local - override del JSON)
+function getEquipos() {
+  try {
+    const raw = localStorage.getItem('hvac_equipos');
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return DB.equipos;
+}
+function saveEquipos(arr) {
+  localStorage.setItem('hvac_equipos', JSON.stringify(arr));
+}
+
+// --- LOGIN ---
+document.getElementById('adminFab').addEventListener('click', () => {
+  document.getElementById('adminOverlay').classList.add('open');
+  if (isAdminLoggedIn()) {
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    renderEquipos();
+    renderMateriales();
+    loadEmpresa();
+  } else {
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminPanel').style.display = 'none';
+    document.getElementById('adminPass').focus();
+  }
+});
+
+document.getElementById('adminLoginBtn').addEventListener('click', tryLogin);
+document.getElementById('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+function tryLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === getAdminPass()) {
+    setAdminSession(true);
+    document.getElementById('adminLogin').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    document.getElementById('adminLoginError').style.display = 'none';
+    document.getElementById('adminPass').value = '';
+    renderEquipos();
+    renderMateriales();
+    loadEmpresa();
+  } else {
+    document.getElementById('adminLoginError').style.display = 'block';
+    document.getElementById('adminPass').value = '';
+    document.getElementById('adminPass').focus();
+  }
+}
+
+document.getElementById('adminLogout').addEventListener('click', () => {
+  setAdminSession(false);
+  document.getElementById('adminLogin').style.display = 'block';
+  document.getElementById('adminPanel').style.display = 'none';
+});
+
+document.getElementById('adminOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('adminOverlay')) {
+    document.getElementById('adminOverlay').classList.remove('open');
+  }
+});
+
+// --- TABS ---
+document.querySelectorAll('.admin-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.admin-tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// --- RENDER EQUIPOS ---
+function renderEquipos(filter) {
+  const equipos = getEquipos();
+  const tbody = document.querySelector('#tableEquipos tbody');
+  let filtered = equipos;
+  if (filter) {
+    const q = filter.toLowerCase();
+    filtered = equipos.filter(e =>
+      (e.marca||'').toLowerCase().includes(q) ||
+      (e.modelo||'').toLowerCase().includes(q) ||
+      (e.tipo||'').toLowerCase().includes(q)
+    );
+  }
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#888;padding:20px;">No hay equipos registrados</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map((eq, i) => `
+    <tr>
+      <td>${eq.marca}</td>
+      <td>${eq.modelo}</td>
+      <td><span class="admin-badge ${eq.tipo === 'Fan Coil' ? 'fancoil' : 'split'}">${eq.tipo}</span></td>
+      <td>${eq.btu_texto || eq.btu}</td>
+      <td>S/ ${eq.precio_unitario.toFixed(2)}</td>
+      <td>S/ ${eq.costo_instalacion_base.toFixed(2)}</td>
+      <td class="actions">
+        <button class="btn btn-outline btn-sm" onclick="editEquipo(${i})">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteEquipo(${i})">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('searchEquipo').addEventListener('input', e => {
+  renderEquipos(e.target.value);
+});
+
+// --- CRUD EQUIPOS ---
+let editingEquipoIdx = -1;
+
+document.getElementById('btnAddEquipo').addEventListener('click', () => {
+  editingEquipoIdx = -1;
+  document.getElementById('modalEquipoTitle').textContent = '➕ Agregar Equipo';
+  clearEquipoForm();
+  document.getElementById('modalEquipoOverlay').classList.add('open');
+});
+
+function clearEquipoForm() {
+  ['eqId','eqMarca','eqModelo','eqTipo','eqBtu','eqBtuTexto','eqEficiencia','eqRefrigerante','eqVoltaje','eqPrecio','eqInstalacion'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+function editEquipo(idx) {
+  const equipos = getEquipos();
+  const eq = equipos[idx];
+  if (!eq) return;
+  editingEquipoIdx = idx;
+  document.getElementById('modalEquipoTitle').textContent = '✏️ Editar Equipo';
+  document.getElementById('eqId').value = eq.id || '';
+  document.getElementById('eqMarca').value = eq.marca || '';
+  document.getElementById('eqModelo').value = eq.modelo || '';
+  document.getElementById('eqTipo').value = eq.tipo || 'Split Pared';
+  document.getElementById('eqBtu').value = eq.btu || '';
+  document.getElementById('eqBtuTexto').value = eq.btu_texto || '';
+  document.getElementById('eqEficiencia').value = eq.eficiencia || '';
+  document.getElementById('eqRefrigerante').value = eq.refrigerante || '';
+  document.getElementById('eqVoltaje').value = eq.voltaje || '';
+  document.getElementById('eqPrecio').value = eq.precio_unitario || '';
+  document.getElementById('eqInstalacion').value = eq.costo_instalacion_base || '';
+  document.getElementById('modalEquipoOverlay').classList.add('open');
+}
+
+function deleteEquipo(idx) {
+  if (!confirm('¿Eliminar este equipo?')) return;
+  const equipos = getEquipos();
+  equipos.splice(idx, 1);
+  saveEquipos(equipos);
+  renderEquipos(document.getElementById('searchEquipo').value);
+  showToast('Equipo eliminado', 'success');
+}
+
+document.getElementById('btnSaveEquipo').addEventListener('click', () => {
+  const id = document.getElementById('eqId').value.trim();
+  const marca = document.getElementById('eqMarca').value.trim();
+  const modelo = document.getElementById('eqModelo').value.trim();
+  if (!id || !marca || !modelo) {
+    showToast('Complete ID, marca y modelo', 'error');
+    return;
+  }
+  const eq = {
+    id,
+    marca,
+    modelo,
+    tipo: document.getElementById('eqTipo').value,
+    btu: parseInt(document.getElementById('eqBtu').value) || 0,
+    btu_texto: document.getElementById('eqBtuTexto').value.trim(),
+    eficiencia: document.getElementById('eqEficiencia').value.trim(),
+    refrigerante: document.getElementById('eqRefrigerante').value.trim(),
+    voltaje: document.getElementById('eqVoltaje').value.trim(),
+    precio_unitario: parseFloat(document.getElementById('eqPrecio').value) || 0,
+    costo_instalacion_base: parseFloat(document.getElementById('eqInstalacion').value) || 0
+  };
+  const equipos = getEquipos();
+  if (editingEquipoIdx >= 0) {
+    equipos[editingEquipoIdx] = eq;
+  } else {
+    // Verificar ID único
+    if (equipos.find(e => e.id === id)) {
+      showToast('Ya existe un equipo con ese ID', 'error');
+      return;
+    }
+    equipos.push(eq);
+  }
+  saveEquipos(equipos);
+  document.getElementById('modalEquipoOverlay').classList.remove('open');
+  renderEquipos(document.getElementById('searchEquipo').value);
+  showToast(editingEquipoIdx >= 0 ? 'Equipo actualizado' : 'Equipo agregado', 'success');
+});
+
+document.getElementById('btnCancelEquipo').addEventListener('click', () => {
+  document.getElementById('modalEquipoOverlay').classList.remove('open');
+});
+
+document.getElementById('modalEquipoOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalEquipoOverlay')) {
+    document.getElementById('modalEquipoOverlay').classList.remove('open');
+  }
+});
+
+// --- RENDER MATERIALES ---
+function renderMateriales(filter) {
+  const materiales = getMateriales();
+  const tbody = document.querySelector('#tableMateriales tbody');
+  let filtered = materiales;
+  if (filter) {
+    const q = filter.toLowerCase();
+    filtered = materiales.filter(m =>
+      (m.nombre||'').toLowerCase().includes(q) ||
+      (m.categoria||'').toLowerCase().includes(q)
+    );
+  }
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#888;padding:20px;">No hay materiales registrados</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map((m, i) => `
+    <tr>
+      <td>${m.nombre}</td>
+      <td>${m.unidad}</td>
+      <td>S/ ${m.precio_unitario.toFixed(2)}</td>
+      <td><span class="admin-badge material">${m.categoria}</span></td>
+      <td class="actions">
+        <button class="btn btn-outline btn-sm" onclick="editMaterial(${i})">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteMaterial(${i})">🗑️</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+document.getElementById('searchMaterial').addEventListener('input', e => {
+  renderMateriales(e.target.value);
+});
+
+// --- CRUD MATERIALES ---
+let editingMaterialIdx = -1;
+
+document.getElementById('btnAddMaterial').addEventListener('click', () => {
+  editingMaterialIdx = -1;
+  document.getElementById('modalMaterialTitle').textContent = '➕ Agregar Material';
+  clearMaterialForm();
+  document.getElementById('modalMaterialOverlay').classList.add('open');
+});
+
+function clearMaterialForm() {
+  ['matId','matNombre','matUnidad','matPrecio','matCategoria'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+}
+
+function editMaterial(idx) {
+  const materiales = getMateriales();
+  const m = materiales[idx];
+  if (!m) return;
+  editingMaterialIdx = idx;
+  document.getElementById('modalMaterialTitle').textContent = '✏️ Editar Material';
+  document.getElementById('matId').value = m.id || '';
+  document.getElementById('matNombre').value = m.nombre || '';
+  document.getElementById('matUnidad').value = m.unidad || 'und';
+  document.getElementById('matPrecio').value = m.precio_unitario || '';
+  document.getElementById('matCategoria').value = m.categoria || 'Otro';
+  document.getElementById('modalMaterialOverlay').classList.add('open');
+}
+
+function deleteMaterial(idx) {
+  if (!confirm('¿Eliminar este material?')) return;
+  const materiales = getMateriales();
+  materiales.splice(idx, 1);
+  saveMateriales(materiales);
+  renderMateriales(document.getElementById('searchMaterial').value);
+  showToast('Material eliminado', 'success');
+}
+
+document.getElementById('btnSaveMaterial').addEventListener('click', () => {
+  const id = document.getElementById('matId').value.trim();
+  const nombre = document.getElementById('matNombre').value.trim();
+  if (!id || !nombre) {
+    showToast('Complete ID y nombre', 'error');
+    return;
+  }
+  const mat = {
+    id,
+    nombre,
+    unidad: document.getElementById('matUnidad').value,
+    precio_unitario: parseFloat(document.getElementById('matPrecio').value) || 0,
+    categoria: document.getElementById('matCategoria').value
+  };
+  const materiales = getMateriales();
+  if (editingMaterialIdx >= 0) {
+    materiales[editingMaterialIdx] = mat;
+  } else {
+    if (materiales.find(m => m.id === id)) {
+      showToast('Ya existe un material con ese ID', 'error');
+      return;
+    }
+    materiales.push(mat);
+  }
+  saveMateriales(materiales);
+  document.getElementById('modalMaterialOverlay').classList.remove('open');
+  renderMateriales(document.getElementById('searchMaterial').value);
+  showToast(editingMaterialIdx >= 0 ? 'Material actualizado' : 'Material agregado', 'success');
+});
+
+document.getElementById('btnCancelMaterial').addEventListener('click', () => {
+  document.getElementById('modalMaterialOverlay').classList.remove('open');
+});
+
+document.getElementById('modalMaterialOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalMaterialOverlay')) {
+    document.getElementById('modalMaterialOverlay').classList.remove('open');
+  }
+});
+
+// --- IMPORT/EXPORT ---
+document.getElementById('btnExportEquipos').addEventListener('click', () => {
+  const equipos = getEquipos();
+  const data = JSON.stringify({ equipos }, null, 2);
+  downloadFile(data, 'equipos.json', 'application/json');
+  showToast('Equipos exportados', 'success');
+});
+
+document.getElementById('btnExportMateriales').addEventListener('click', () => {
+  const materiales = getMateriales();
+  const data = JSON.stringify({ materiales }, null, 2);
+  downloadFile(data, 'materiales.json', 'application/json');
+  showToast('Materiales exportados', 'success');
+});
+
+document.getElementById('btnExportTodo').addEventListener('click', () => {
+  const equipos = getEquipos();
+  const materiales = getMateriales();
+  const config = DB.configuracion;
+  const data = JSON.stringify({ equipos, materiales, configuracion: config }, null, 2);
+  downloadFile(data, 'hvac_database.json', 'application/json');
+  showToast('Base de datos completa exportada', 'success');
+});
+
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Import equipos
+document.getElementById('fileImportEquipos').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.equipos && Array.isArray(data.equipos)) {
+        saveEquipos(data.equipos);
+        renderEquipos();
+        showToast(`Importados ${data.equipos.length} equipos`, 'success');
+      } else {
+        showToast('Formato inválido: falta array "equipos"', 'error');
+      }
+    } catch(err) {
+      showToast('Error al importar: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// Import materiales
+document.getElementById('fileImportMateriales').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (data.materiales && Array.isArray(data.materiales)) {
+        saveMateriales(data.materiales);
+        renderMateriales();
+        showToast(`Importados ${data.materiales.length} materiales`, 'success');
+      } else {
+        showToast('Formato inválido: falta array "materiales"', 'error');
+      }
+    } catch(err) {
+      showToast('Error al importar: ' + err.message, 'error');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+// --- CONFIGURACIÓN ---
+function loadEmpresa() {
+  const emp = DB.configuracion.empresa || {};
+  document.getElementById('cfgEmpNombre').value = emp.nombre || '';
+  document.getElementById('cfgEmpRuc').value = emp.ruc || '';
+  document.getElementById('cfgEmpDir').value = emp.direccion || '';
+  document.getElementById('cfgEmpTel').value = emp.telefono || '';
+  document.getElementById('cfgEmpEmail').value = emp.email || '';
+  document.getElementById('cfgEmpWeb').value = emp.web || '';
+}
+
+document.getElementById('btnSaveEmpresa').addEventListener('click', () => {
+  DB.configuracion.empresa = {
+    nombre: document.getElementById('cfgEmpNombre').value.trim(),
+    ruc: document.getElementById('cfgEmpRuc').value.trim(),
+    direccion: document.getElementById('cfgEmpDir').value.trim(),
+    telefono: document.getElementById('cfgEmpTel').value.trim(),
+    email: document.getElementById('cfgEmpEmail').value.trim(),
+    web: document.getElementById('cfgEmpWeb').value.trim()
+  };
+  showToast('Datos de empresa guardados', 'success');
+});
+
+document.getElementById('btnSavePass').addEventListener('click', () => {
+  const p1 = document.getElementById('newAdminPass').value;
+  const p2 = document.getElementById('confirmAdminPass').value;
+  if (!p1) { showToast('Ingrese una contraseña', 'error'); return; }
+  if (p1 !== p2) { showToast('Las contraseñas no coinciden', 'error'); return; }
+  setAdminPass(p1);
+  document.getElementById('newAdminPass').value = '';
+  document.getElementById('confirmAdminPass').value = '';
+  showToast('Contraseña actualizada', 'success');
+});
+
+// Cerrar modales con Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.admin-modal-overlay').forEach(o => o.classList.remove('open'));
+  }
+});
+
+// ============================================================
 // TOAST
 // ============================================================
 function showToast(msg, type) {
@@ -1219,5 +1794,188 @@ function showToast(msg, type) {
   t._timeout = setTimeout(() => t.classList.remove('show'), 3000);
 }
 </script>
+</body>
+<!-- ==================== ADMIN PANEL HTML ==================== -->
+<button class="admin-fab" id="adminFab" title="Administrar base de datos">⚙️</button>
+
+<div class="admin-modal-overlay" id="adminOverlay">
+  <div class="admin-modal">
+    <!-- LOGIN -->
+    <div id="adminLogin">
+      <h2>🔐 Acceso de Administración</h2>
+      <div class="admin-login-box">
+        <p style="color:var(--text-sec);margin-bottom:16px;">Ingrese la contraseña para gestionar equipos y materiales.</p>
+        <input type="password" id="adminPass" placeholder="Contraseña de administración" autofocus>
+        <button class="btn btn-primary btn-block" id="adminLoginBtn">Ingresar</button>
+        <p id="adminLoginError" style="color:var(--danger);font-size:.85rem;margin-top:8px;display:none;">Contraseña incorrecta</p>
+      </div>
+    </div>
+
+    <!-- PANEL PRINCIPAL -->
+    <div id="adminPanel" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <h2 style="margin:0;">🗄️ Base de Datos</h2>
+        <button class="btn btn-outline btn-sm" id="adminLogout">🔒 Cerrar sesión</button>
+      </div>
+
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="tabEquipos">📦 Equipos</button>
+        <button class="admin-tab" data-tab="tabMateriales">🔩 Materiales</button>
+        <button class="admin-tab" data-tab="tabImportExport">📤 Importar/Exportar</button>
+        <button class="admin-tab" data-tab="tabConfig">🔧 Configuración</button>
+      </div>
+
+      <!-- TAB EQUIPOS -->
+      <div class="admin-tab-content active" id="tabEquipos">
+        <div class="admin-actions-bar">
+          <button class="btn btn-success btn-sm" id="btnAddEquipo">➕ Agregar equipo</button>
+          <input type="text" id="searchEquipo" placeholder="Buscar equipo..." style="padding:6px 12px;border:2px solid var(--border);border-radius:8px;font-size:.85rem;flex:1;min-width:150px;">
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="tableEquipos">
+            <thead><tr><th>Marca</th><th>Modelo</th><th>Tipo</th><th>BTU</th><th>Precio</th><th>Instalación</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB MATERIALES -->
+      <div class="admin-tab-content" id="tabMateriales">
+        <div class="admin-actions-bar">
+          <button class="btn btn-success btn-sm" id="btnAddMaterial">➕ Agregar material</button>
+          <input type="text" id="searchMaterial" placeholder="Buscar material..." style="padding:6px 12px;border:2px solid var(--border);border-radius:8px;font-size:.85rem;flex:1;min-width:150px;">
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="admin-table" id="tableMateriales">
+            <thead><tr><th>Nombre</th><th>Unidad</th><th>Precio unit.</th><th>Categoría</th><th>Acciones</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB IMPORT/EXPORT -->
+      <div class="admin-tab-content" id="tabImportExport">
+        <h3 style="margin-bottom:12px;">Exportar base de datos</h3>
+        <div class="admin-actions-bar">
+          <button class="btn btn-primary btn-sm" id="btnExportEquipos">📦 Exportar equipos.json</button>
+          <button class="btn btn-primary btn-sm" id="btnExportMateriales">🔩 Exportar materiales.json</button>
+          <button class="btn btn-primary btn-sm" id="btnExportTodo">📄 Exportar todo</button>
+        </div>
+        <hr style="margin:20px 0;border:1px solid var(--border);">
+        <h3 style="margin-bottom:12px;">Importar base de datos</h3>
+        <p style="color:var(--text-sec);font-size:.85rem;margin-bottom:12px;">Seleccione un archivo JSON para importar. Los datos existentes serán reemplazados.</p>
+        <div class="admin-actions-bar">
+          <div class="file-input-wrapper">
+            <button class="btn btn-warning btn-sm">📦 Importar equipos</button>
+            <input type="file" id="fileImportEquipos" accept=".json">
+          </div>
+          <div class="file-input-wrapper">
+            <button class="btn btn-warning btn-sm">🔩 Importar materiales</button>
+            <input type="file" id="fileImportMateriales" accept=".json">
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB CONFIGURACIÓN -->
+      <div class="admin-tab-content" id="tabConfig">
+        <h3 style="margin-bottom:12px;">Contraseña de administración</h3>
+        <div class="admin-form-grid" style="max-width:400px;">
+          <div class="form-group">
+            <label>Nueva contraseña</label>
+            <input type="password" id="newAdminPass" placeholder="Nueva contraseña">
+          </div>
+          <div class="form-group">
+            <label>Confirmar contraseña</label>
+            <input type="password" id="confirmAdminPass" placeholder="Confirmar">
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="btnSavePass">💾 Cambiar contraseña</button>
+        <hr style="margin:20px 0;border:1px solid var(--border);">
+        <h3 style="margin-bottom:12px;">Datos de la empresa</h3>
+        <div class="admin-form-grid">
+          <div class="form-group"><label>Nombre</label><input type="text" id="cfgEmpNombre"></div>
+          <div class="form-group"><label>RUC</label><input type="text" id="cfgEmpRuc"></div>
+          <div class="form-group"><label>Dirección</label><input type="text" id="cfgEmpDir"></div>
+          <div class="form-group"><label>Teléfono</label><input type="text" id="cfgEmpTel"></div>
+          <div class="form-group"><label>Email</label><input type="email" id="cfgEmpEmail"></div>
+          <div class="form-group"><label>Web</label><input type="text" id="cfgEmpWeb"></div>
+        </div>
+        <button class="btn btn-success btn-sm" id="btnSaveEmpresa">💾 Guardar datos empresa</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FORM EQUIPO -->
+<div class="admin-modal-overlay" id="modalEquipoOverlay">
+  <div class="admin-modal" style="max-width:500px;">
+    <h2 id="modalEquipoTitle">➕ Agregar Equipo</h2>
+    <div class="admin-form-grid">
+      <div class="form-group"><label>ID único</label><input type="text" id="eqId" placeholder="split-midea-12k"></div>
+      <div class="form-group"><label>Marca</label><input type="text" id="eqMarca" placeholder="Midea"></div>
+      <div class="form-group"><label>Modelo</label><input type="text" id="eqModelo" placeholder="MSAFB-12HRN1-QC3"></div>
+      <div class="form-group"><label>Tipo</label>
+        <select id="eqTipo">
+          <option value="Split Pared">Split Pared</option>
+          <option value="Fan Coil">Fan Coil</option>
+          <option value="VRF">VRF</option>
+          <option value="Ventana">Ventana</option>
+          <option value="Portátil">Portátil</option>
+        </select>
+      </div>
+      <div class="form-group"><label>BTU</label><input type="number" id="eqBtu" placeholder="12000"></div>
+      <div class="form-group"><label>BTU texto</label><input type="text" id="eqBtuTexto" placeholder="12,000 BTU (1 TR)"></div>
+      <div class="form-group"><label>Eficiencia</label><input type="text" id="eqEficiencia" placeholder="A+"></div>
+      <div class="form-group"><label>Refrigerante</label><input type="text" id="eqRefrigerante" placeholder="R-410A"></div>
+      <div class="form-group"><label>Voltaje</label><input type="text" id="eqVoltaje" placeholder="220V"></div>
+      <div class="form-group"><label>Precio unitario (S/)</label><input type="number" id="eqPrecio" step="0.01" placeholder="1250.00"></div>
+      <div class="form-group"><label>Costo instalación base (S/)</label><input type="number" id="eqInstalacion" step="0.01" placeholder="450.00"></div>
+    </div>
+    <div class="admin-actions-bar">
+      <button class="btn btn-success btn-sm" id="btnSaveEquipo">💾 Guardar</button>
+      <button class="btn btn-outline btn-sm" id="btnCancelEquipo">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FORM MATERIAL -->
+<div class="admin-modal-overlay" id="modalMaterialOverlay">
+  <div class="admin-modal" style="max-width:500px;">
+    <h2 id="modalMaterialTitle">➕ Agregar Material</h2>
+    <div class="admin-form-grid">
+      <div class="form-group"><label>ID único</label><input type="text" id="matId" placeholder="ducto-galv-24"></div>
+      <div class="form-group"><label>Nombre</label><input type="text" id="matNombre" placeholder="Ducto galvanizado 24&quot;"></div>
+      <div class="form-group"><label>Unidad</label>
+        <select id="matUnidad">
+          <option value="kg">kg</option>
+          <option value="m">metro</option>
+          <option value="m2">m²</option>
+          <option value="und">unidad</option>
+          <option value="par">par</option>
+          <option value="rollo">rollo</option>
+          <option value="gal">galón</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Precio unitario (S/)</label><input type="number" id="matPrecio" step="0.01" placeholder="3.50"></div>
+      <div class="form-group full"><label>Categoría</label>
+        <select id="matCategoria">
+          <option value="Ductos">Ductos</option>
+          <option value="Aislamiento">Aislamiento</option>
+          <option value="Tubería cobre">Tubería cobre</option>
+          <option value="Eléctrico">Eléctrico</option>
+          <option value="Soportería">Soportería</option>
+          <option value="Accesorios">Accesorios</option>
+          <option value="Refrigerante">Refrigerante</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="admin-actions-bar">
+      <button class="btn btn-success btn-sm" id="btnSaveMaterial">💾 Guardar</button>
+      <button class="btn btn-outline btn-sm" id="btnCancelMaterial">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
