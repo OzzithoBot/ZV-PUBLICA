@@ -455,94 +455,22 @@ body {
 <div class="container">
   <!-- PANEL IZQUIERDO: FORMULARIO -->
   <div>
-    <!-- DATOS DEL EQUIPO -->
+    <!-- INSTRUCCIONES -->
     <div class="card">
-      <h2>📦 Equipo</h2>
-      <div class="form-group">
-        <label for="selectEquipo">Seleccionar equipo</label>
-        <select id="selectEquipo">
-          <option value="">-- Seleccione un equipo --</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Cantidad</label>
-        <div class="item-count">
-          <button id="btnMenos" type="button">−</button>
-          <span id="cantidadValor">1</span>
-          <button id="btnMas" type="button">+</button>
-        </div>
-      </div>
-      <div id="equipoInfo" class="equipo-info">
-        <div id="equipoBadges"></div>
-        <div id="equipoPrice" class="price-tag"></div>
+      <h2>📋 Proyecto</h2>
+      <p style="color:var(--text-sec);font-size:.9rem;margin-bottom:12px;">
+        Agregue equipos y materiales para cotizar un proyecto completo. Use los botones de abajo o el panel centralicio para gestionar la base de datos.
+      </p>
+      <div class="btn-row">
+        <button class="btn btn-success" id="btnAddEquipoProyecto">📦 Agregar equipo</button>
+        <button class="btn btn-success" id="btnAddMaterialProyecto">🔩 Agregar material</button>
       </div>
     </div>
 
-    <!-- DISTANCIAS -->
+    <!-- IVA -->
     <div class="card">
-      <h2>📏 Distancias</h2>
-      <div class="form-group">
-        <label for="acometida">Longitud de acometida (tubería de refrigerante)</label>
-        <div class="input-with-unit">
-          <input type="number" id="acometida" min="0" max="200" step="0.5" value="0" placeholder="0">
-          <span class="unit">metros</span>
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="distanciaEC">Distancia evaporador ↔ condensador</label>
-        <div class="input-with-unit">
-          <input type="number" id="distanciaEC" min="0" max="200" step="0.5" value="0" placeholder="0">
-          <span class="unit">metros</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- PARÁMETROS EXTRA -->
-    <div class="card">
-      <h2>⚙️ Parámetros de Instalación</h2>
+      <h2>⚙️ Opciones</h2>
       <div class="checklist">
-        <label class="check-item" id="labelInstCompleja">
-          <input type="checkbox" id="instCompleja">
-          <div>
-            <div class="check-label">Instalación compleja</div>
-            <div class="check-detail">Dificultad alta: altura >4m, perforación muros gruesos, etc. (+15%)</div>
-          </div>
-        </label>
-        <label class="check-item" id="labelTuberiaAdicional">
-          <input type="checkbox" id="tuberiaAdicional">
-          <div>
-            <div class="check-label">Tubería adicional</div>
-            <div class="check-detail">Cobre extra para recorridos no estándar (+S/ 65/metro)</div>
-          </div>
-        </label>
-        <div class="form-group" style="margin: 8px 0 0 28px; display:none;" id="tuberiaAdicionalMts">
-          <label for="tuberiaAdicionalMetros">Metros de tubería adicional</label>
-          <div class="input-with-unit">
-            <input type="number" id="tuberiaAdicionalMetros" min="0" max="500" step="1" value="0">
-            <span class="unit">metros</span>
-          </div>
-        </div>
-        <label class="check-item" id="labelGarantiaExtendida">
-          <input type="checkbox" id="garantiaExtendida">
-          <div>
-            <div class="check-label">Garantía extendida</div>
-            <div class="check-detail">Extensión de garantía de fábrica (+S/ 500)</div>
-          </div>
-        </label>
-        <label class="check-item" id="labelManoObraExtra">
-          <input type="checkbox" id="manoObraExtra">
-          <div>
-            <div class="check-label">Mano de obra extra</div>
-            <div class="check-detail">Horas adicionales de trabajo especializado (+S/ 80/hora)</div>
-          </div>
-        </label>
-        <div class="form-group" style="margin: 8px 0 0 28px; display:none;" id="manoObraExtraHoras">
-          <label for="manoObraExtraCant">Horas de mano de obra extra</label>
-          <div class="input-with-unit">
-            <input type="number" id="manoObraExtraCant" min="0" max="100" step="1" value="0">
-            <span class="unit">horas</span>
-          </div>
-        </div>
         <label class="check-item" id="labelIncluirIVA">
           <input type="checkbox" id="incluirIVA">
           <div>
@@ -612,11 +540,11 @@ body {
   <!-- PANEL DERECHO: RESULTADO -->
   <div>
     <div class="result-card" id="resultPanel">
-      <h2>💰 Cotización</h2>
+      <h2>💰 Cotización del Proyecto</h2>
       <div id="resultadoContenido">
         <div class="empty-state">
           <div class="icon">📋</div>
-          <p>Seleccione un equipo y configure los parámetros para generar la cotización.</p>
+          <p>Agregue equipos y materiales para generar la cotización del proyecto.</p>
         </div>
       </div>
     </div>
@@ -637,16 +565,10 @@ body {
 // ============================================================
 let DB = { equipos: [], configuracion: {} };
 let state = {
-  equipoId: '',
-  cantidad: 1,
-  acometida: 0,
-  distanciaEC: 0,
-  instCompleja: false,
-  tuberiaAdicional: false,
-  tuberiaAdicionalMetros: 0,
-  garantiaExtendida: false,
-  manoObraExtra: false,
-  manoObraExtraCant: 0,
+  // Items del proyecto (equipos y materiales)
+  proyectoEquipos: [],  // [{ equipoId, cantidad, acometida, distanciaEC, instCompleja, tuberiaAdicional, tuberiaAdicionalMetros, garantiaExtendida, manoObraExtra, manoObraExtraCant }]
+  proyectoMateriales: [], // [{ materialId, cantidad }]
+  // Configuración global
   incluirIVA: false,
   cfgAcometida: 150,
   cfgDistEC: 80,
@@ -717,63 +639,7 @@ function llenarSelect() {
 // EVENTOS
 // ============================================================
 function bindEvents() {
-  // Equipo
-  document.getElementById('selectEquipo').addEventListener('change', e => {
-    state.equipoId = e.target.value;
-    mostrarInfoEquipo();
-    guardarLocalStorage();
-    calcular();
-  });
-
-  // Cantidad
-  document.getElementById('btnMenos').addEventListener('click', () => {
-    if (state.cantidad > 1) { state.cantidad--; actualizarCantidad(); }
-  });
-  document.getElementById('btnMas').addEventListener('click', () => {
-    if (state.cantidad < 99) { state.cantidad++; actualizarCantidad(); }
-  });
-
-  // Distancias
-  document.getElementById('acometida').addEventListener('input', e => {
-    state.acometida = parseFloat(e.target.value) || 0;
-    guardarLocalStorage(); calcular();
-  });
-  document.getElementById('distanciaEC').addEventListener('input', e => {
-    state.distanciaEC = parseFloat(e.target.value) || 0;
-    guardarLocalStorage(); calcular();
-  });
-
-  // Checkboxes
-  document.getElementById('instCompleja').addEventListener('change', e => {
-    state.instCompleja = e.target.checked;
-    toggleCheckStyle('labelInstCompleja');
-    guardarLocalStorage(); calcular();
-  });
-  document.getElementById('tuberiaAdicional').addEventListener('change', e => {
-    state.tuberiaAdicional = e.target.checked;
-    toggleCheckStyle('labelTuberiaAdicional');
-    document.getElementById('tuberiaAdicionalMts').style.display = e.target.checked ? 'block' : 'none';
-    guardarLocalStorage(); calcular();
-  });
-  document.getElementById('tuberiaAdicionalMetros').addEventListener('input', e => {
-    state.tuberiaAdicionalMetros = parseFloat(e.target.value) || 0;
-    guardarLocalStorage(); calcular();
-  });
-  document.getElementById('garantiaExtendida').addEventListener('change', e => {
-    state.garantiaExtendida = e.target.checked;
-    toggleCheckStyle('labelGarantiaExtendida');
-    guardarLocalStorage(); calcular();
-  });
-  document.getElementById('manoObraExtra').addEventListener('change', e => {
-    state.manoObraExtra = e.target.checked;
-    toggleCheckStyle('labelManoObraExtra');
-    document.getElementById('manoObraExtraHoras').style.display = e.target.checked ? 'block' : 'none';
-    guardarLocalStorage(); calcular();
-  });
-  document.getElementById('manoObraExtraCant').addEventListener('input', e => {
-    state.manoObraExtraCant = parseFloat(e.target.value) || 0;
-    guardarLocalStorage(); calcular();
-  });
+  // IVA
   document.getElementById('incluirIVA').addEventListener('change', e => {
     state.incluirIVA = e.target.checked;
     toggleCheckStyle('labelIncluirIVA');
@@ -799,6 +665,8 @@ function bindEvents() {
   document.getElementById('btnPDF').addEventListener('click', exportarPDF);
   document.getElementById('btnCSV').addEventListener('click', exportarCSV);
   document.getElementById('btnLimpiar').addEventListener('click', limpiarTodo);
+  document.getElementById('btnAddEquipoProyecto').addEventListener('click', openSelectorEquipo);
+  document.getElementById('btnAddMaterialProyecto').addEventListener('click', openSelectorMaterial);
 
   // Cargar CSV
   document.getElementById('fileCSV').addEventListener('change', cargarCSV);
@@ -840,113 +708,290 @@ function mostrarInfoEquipo() {
 // ============================================================
 // CÁLCULO PRINCIPAL
 // ============================================================
+
+// ============================================================
+// MANEJO DE ITEMS DEL PROYECTO
+// ============================================================
+
+function addEquipoToProyecto(equipoId) {
+  const equipos = getEquipos();
+  const eq = equipos.find(e => e.id === equipoId);
+  if (!eq) return;
+  // Verificar si ya existe
+  const existing = state.proyectoEquipos.findIndex(p => p.equipoId === equipoId);
+  if (existing >= 0) {
+    state.proyectoEquipos[existing].cantidad = (state.proyectoEquipos[existing].cantidad || 1) + 1;
+  } else {
+    state.proyectoEquipos.push({
+      equipoId: equipoId,
+      cantidad: 1,
+      acometida: 0,
+      distanciaEC: 0,
+      instCompleja: false,
+      tuberiaAdicional: false,
+      tuberiaAdicionalMetros: 0,
+      garantiaExtendida: false,
+      manoObraExtra: false,
+      manoObraExtraCant: 0
+    });
+  }
+  guardarLocalStorage();
+  calcular();
+  closeModal('modalSelectorEquipo');
+  showToast(eq.marca + ' ' + eq.modelo + ' agregado', 'success');
+}
+
+function removeEquipoItem(idx) {
+  state.proyectoEquipos.splice(idx, 1);
+  guardarLocalStorage();
+  calcular();
+}
+
+function updateEquipoCantidad(idx, delta) {
+  const item = state.proyectoEquipos[idx];
+  if (!item) return;
+  item.cantidad = Math.max(1, (item.cantidad || 1) + delta);
+  guardarLocalStorage();
+  calcular();
+}
+
+function addMaterialToProyecto(materialId) {
+  const materiales = getMateriales();
+  const mat = materiales.find(m => m.id === materialId);
+  if (!mat) return;
+  const existing = state.proyectoMateriales.findIndex(p => p.materialId === materialId);
+  if (existing >= 0) {
+    state.proyectoMateriales[existing].cantidad = (state.proyectoMateriales[existing].cantidad || 1) + 1;
+  } else {
+    state.proyectoMateriales.push({ materialId: materialId, cantidad: 1 });
+  }
+  guardarLocalStorage();
+  calcular();
+  closeModal('modalSelectorMaterial');
+  showToast(mat.nombre + ' agregado', 'success');
+}
+
+function removeMaterialItem(idx) {
+  state.proyectoMateriales.splice(idx, 1);
+  guardarLocalStorage();
+  calcular();
+}
+
+function updateMaterialCantidad(idx, val) {
+  const item = state.proyectoMateriales[idx];
+  if (!item) return;
+  item.cantidad = Math.max(0, parseFloat(val) || 0);
+  if (item.cantidad <= 0) {
+    state.proyectoMateriales.splice(idx, 1);
+  }
+  guardarLocalStorage();
+  calcular();
+}
+
+// ============================================================
+// SELECTORES DE EQUIPOS Y MATERIALES
+// ============================================================
+
+function openSelectorEquipo() {
+  const equipos = getEquipos();
+  const list = document.getElementById('selectorEquipoList');
+  const addedIds = state.proyectoEquipos.map(p => p.equipoId);
+
+  // Agrupar por tipo
+  const tipos = {};
+  equipos.forEach(eq => {
+    if (!tipos[eq.tipo]) tipos[eq.tipo] = [];
+    tipos[eq.tipo].push(eq);
+  });
+
+  let html = '';
+  for (const [tipo, items] of Object.entries(tipos)) {
+    html += `<div class="selector-category">${tipo}</div>`;
+    items.forEach(eq => {
+      const isAdded = addedIds.includes(eq.id);
+      html += `<div class="selector-item">`;
+      html += `<div class="sel-info">`;
+      html += `<div class="sel-name">${eq.marca} ${eq.modelo}</div>`;
+      html += `<div class="sel-detail">${eq.btu_texto || eq.btu} | Ef: ${eq.eficiencia} | ${eq.refrigerante}</div>`;
+      html += `</div>`;
+      html += `<div class="sel-price">S/ ${eq.precio_unitario.toFixed(2)}</div>`;
+      if (isAdded) {
+        html += `<button class="sel-added" disabled>✓ Agregado</button>`;
+      } else {
+        html += `<button class="sel-add" onclick="addEquipoToProyecto('${eq.id}')">+ Agregar</button>`;
+      }
+      html += `</div>`;
+    });
+  }
+  list.innerHTML = html;
+  document.getElementById('modalSelectorEquipo').classList.add('open');
+  setTimeout(() => document.getElementById('searchSelectorEquipo').focus(), 100);
+}
+
+function openSelectorMaterial() {
+  const materiales = getMateriales();
+  const list = document.getElementById('selectorMaterialList');
+  const addedIds = state.proyectoMateriales.map(p => p.materialId);
+
+  // Agrupar por categoría
+  const cats = {};
+  materiales.forEach(m => {
+    if (!cats[m.categoria]) cats[m.categoria] = [];
+    cats[m.categoria].push(m);
+  });
+
+  let html = '';
+  for (const [cat, items] of Object.entries(cats)) {
+    html += `<div class="selector-category">${cat}</div>`;
+    items.forEach(m => {
+      const isAdded = addedIds.includes(m.id);
+      html += `<div class="selector-item">`;
+      html += `<div class="sel-info">`;
+      html += `<div class="sel-name">${m.nombre}</div>`;
+      html += `<div class="sel-detail">${m.unidad} | ${m.categoria}</div>`;
+      html += `</div>`;
+      html += `<div class="sel-price">S/ ${m.precio_unitario.toFixed(2)}</div>`;
+      if (isAdded) {
+        html += `<button class="sel-added" disabled>✓ Agregado</button>`;
+      } else {
+        html += `<button class="sel-add" onclick="addMaterialToProyecto('${m.id}')">+ Agregar</button>`;
+      }
+      html += `</div>`;
+    });
+  }
+  list.innerHTML = html;
+  document.getElementById('modalSelectorMaterial').classList.add('open');
+  setTimeout(() => document.getElementById('searchSelectorMaterial').focus(), 100);
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// Eventos de selectores
+document.getElementById('btnCloseSelectorEquipo').addEventListener('click', () => closeModal('modalSelectorEquipo'));
+document.getElementById('btnCloseSelectorMaterial').addEventListener('click', () => closeModal('modalSelectorMaterial'));
+document.getElementById('modalSelectorEquipo').addEventListener('click', e => { if (e.target === document.getElementById('modalSelectorEquipo')) closeModal('modalSelectorEquipo'); });
+document.getElementById('modalSelectorMaterial').addEventListener('click', e => { if (e.target === document.getElementById('modalSelectorMaterial')) closeModal('modalSelectorMaterial'); });
+
+// Búsqueda en selectores
+document.getElementById('searchSelectorEquipo').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#selectorEquipoList .selector-item').forEach(el => {
+    el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+document.getElementById('searchSelectorMaterial').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  document.querySelectorAll('#selectorMaterialList .selector-item').forEach(el => {
+    el.style.display = el.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+
 function calcular() {
   const resultado = document.getElementById('resultadoContenido');
-  if (!state.equipoId) {
-    resultado.innerHTML = `<div class="empty-state"><div class="icon">📋</div><p>Seleccione un equipo y configure los parámetros para generar la cotización.</p></div>`;
+  const sim = DB.configuracion.simbolo_moneda || 'S/';
+  const equipos = getEquipos();
+  const materiales = getMateriales();
+
+  if (state.proyectoEquipos.length === 0 && state.proyectoMateriales.length === 0) {
+    resultado.innerHTML = `<div class="empty-state"><div class="icon">📋</div><p>Agregue equipos y materiales para generar la cotización del proyecto.</p></div>`;
     return;
   }
 
-  const eq = DB.equipos.find(e => e.id === state.equipoId);
-  if (!eq) return;
+  let totalEquipos = 0;
+  let totalMateriales = 0;
+  let html = '';
 
-  const sim = DB.configuracion.simbolo_moneda || 'S/';
-  const cant = state.cantidad;
+  // ===== SECCIÓN EQUIPOS =====
+  if (state.proyectoEquipos.length > 0) {
+    html += `<div class="cotizacion-items-section">`;
+    html += `<div class="cotizacion-items-header"><h3>📦 Equipos (${state.proyectoEquipos.length})</h3></div>`;
 
-  // Cálculos
-  const subtotalEquipo = eq.precio_unitario * cant;
-  const subtotalInstalacion = eq.costo_instalacion_base * cant;
-  const precioBase = subtotalEquipo + subtotalInstalacion;
+    state.proyectoEquipos.forEach((item, idx) => {
+      const eq = equipos.find(e => e.id === item.equipoId);
+      if (!eq) return;
+      const cant = item.cantidad || 1;
+      const subtotalEq = eq.precio_unitario * cant;
+      const subtotalInst = eq.costo_instalacion_base * cant;
+      const precioBase = subtotalEq + subtotalInst;
+      const costoAcometida = (item.acometida || 0) * state.cfgAcometida * cant;
+      const costoDistEC = (item.distanciaEC || 0) * state.cfgDistEC * cant;
+      const costoInstCompleja = item.instCompleja ? precioBase * (state.cfgPorcCompleja / 100) : 0;
+      const costoTuberiaAdic = item.tuberiaAdicional ? (item.tuberiaAdicionalMetros || 0) * state.cfgTuberiaAdic * cant : 0;
+      const costoGarantia = item.garantiaExtendida ? state.cfgGarantia * cant : 0;
+      const costoManoObra = item.manoObraExtra ? (item.manoObraExtraCant || 0) * state.cfgManoObra : 0;
+      const itemTotal = precioBase + costoAcometida + costoDistEC + costoInstCompleja + costoTuberiaAdic + costoGarantia + costoManoObra;
+      totalEquipos += itemTotal;
 
-  const costoAcometida = state.acometida * state.cfgAcometida * cant;
-  const costoDistEC = state.distanciaEC * state.cfgDistEC * cant;
+      html += `<div class="item-row">`;
+      html += `<div class="item-info">`;
+      html += `<div class="item-name">${eq.marca} ${eq.modelo}</div>`;
+      html += `<div class="item-detail">${eq.btu_texto || eq.btu} | ${eq.tipo} | Ef: ${eq.eficiencia}</div>`;
+      html += `</div>`;
+      html += `<div class="item-qty">`;
+      html += `<button onclick="updateEquipoCantidad(${idx},-1)">−</button>`;
+      html += `<span>${cant}</span>`;
+      html += `<button onclick="updateEquipoCantidad(${idx},1)">+</button>`;
+      html += `</div>`;
+      html += `<div class="item-price">${sim} ${itemTotal.toFixed(2)}</div>`;
+      html += `<button class="btn-remove" onclick="removeEquipoItem(${idx})">✕</button>`;
+      html += `</div>`;
+    });
 
-  let costoInstCompleja = 0;
-  if (state.instCompleja) {
-    costoInstCompleja = precioBase * (state.cfgPorcCompleja / 100);
+    html += `<div class="items-summary">`;
+    html += `<div class="summary-row"><span>Subtotal equipos</span><span>${sim} ${totalEquipos.toFixed(2)}</span></div>`;
+    html += `</div></div>`;
   }
 
-  let costoTuberiaAdic = 0;
-  if (state.tuberiaAdicional) {
-    costoTuberiaAdic = state.tuberiaAdicionalMetros * state.cfgTuberiaAdic * cant;
+  // ===== SECCIÓN MATERIALES =====
+  if (state.proyectoMateriales.length > 0) {
+    html += `<div class="cotizacion-items-section">`;
+    html += `<div class="cotizacion-items-header"><h3>🔩 Materiales (${state.proyectoMateriales.length})</h3></div>`;
+
+    state.proyectoMateriales.forEach((item, idx) => {
+      const mat = materiales.find(m => m.id === item.materialId);
+      if (!mat) return;
+      const cant = item.cantidad || 1;
+      const itemTotal = mat.precio_unitario * cant;
+      totalMateriales += itemTotal;
+
+      html += `<div class="material-row">`;
+      html += `<div class="mat-info">`;
+      html += `<div class="mat-name">${mat.nombre}</div>`;
+      html += `<div class="mat-detail">${mat.categoria} | ${sim}${mat.precio_unitario.toFixed(2)}/${mat.unidad}</div>`;
+      html += `</div>`;
+      html += `<input type="number" class="mat-qty-input" value="${cant}" min="0" step="0.5" onchange="updateMaterialCantidad(${idx},this.value)">`;
+      html += `<div class="mat-price">${sim} ${itemTotal.toFixed(2)}</div>`;
+      html += `<button class="btn-remove" onclick="removeMaterialItem(${idx})">✕</button>`;
+      html += `</div>`;
+    });
+
+    html += `<div class="items-summary">`;
+    html += `<div class="summary-row"><span>Subtotal materiales</span><span>${sim} ${totalMateriales.toFixed(2)}</span></div>`;
+    html += `</div></div>`;
   }
 
-  let costoGarantia = 0;
-  if (state.garantiaExtendida) {
-    costoGarantia = state.cfgGarantia * cant;
-  }
-
-  let costoManoObra = 0;
-  if (state.manoObraExtra) {
-    costoManoObra = state.manoObraExtraCant * state.cfgManoObra;
-  }
-
-  const subtotalGeneral = precioBase + costoAcometida + costoDistEC + costoInstCompleja + costoTuberiaAdic + costoGarantia + costoManoObra;
-
+  // ===== TOTALES =====
+  const subtotalGeneral = totalEquipos + totalMateriales;
   let iva = 0;
   if (state.incluirIVA) {
     iva = subtotalGeneral * (state.cfgIVA / 100);
   }
-
   const total = subtotalGeneral + iva;
 
-  // Render desglose
-  let html = `<div class="desglose fade-in">`;
-
-  // Equipo
-  html += `<div class="desglose-row"><span class="label">Equipo: ${eq.marca} ${eq.modelo} × ${cant}</span><span class="value">${sim} ${subtotalEquipo.toFixed(2)}</span></div>`;
-  html += `<div class="desglose-row"><span class="label" style="padding-left:16px;color:#888;font-size:.82rem;">Instalación base incluida</span><span class="value" style="color:#888;font-size:.82rem;">${sim} ${subtotalInstalacion.toFixed(2)}</span></div>`;
-
-  html += `<div class="desglose-row subtotal"><span class="label">Subtotal base</span><span class="value">${sim} ${precioBase.toFixed(2)}</span></div>`;
-
-  // Acometida
-  if (state.acometida > 0) {
-    html += `<div class="desglose-row"><span class="label">Acometida: ${state.acometida}m × ${sim}${state.cfgAcometida}/m × ${cant} eq.</span><span class="value">${sim} ${costoAcometida.toFixed(2)}</span></div>`;
+  html += `<div class="desglose" style="margin-top:16px;">`;
+  if (state.proyectoEquipos.length > 0) {
+    html += `<div class="desglose-row"><span class="label">Subtotal equipos</span><span class="value">${sim} ${totalEquipos.toFixed(2)}</span></div>`;
   }
-
-  // Distancia EC
-  if (state.distanciaEC > 0) {
-    html += `<div class="desglose-row"><span class="label">Dist. evap-cond: ${state.distanciaEC}m × ${sim}${state.cfgDistEC}/m × ${cant} eq.</span><span class="value">${sim} ${costoDistEC.toFixed(2)}</span></div>`;
+  if (state.proyectoMateriales.length > 0) {
+    html += `<div class="desglose-row"><span class="label">Subtotal materiales</span><span class="value">${sim} ${totalMateriales.toFixed(2)}</span></div>`;
   }
-
-  // Instalación compleja
-  if (state.instCompleja) {
-    html += `<div class="desglose-row"><span class="label">Instalación compleja (+${state.cfgPorcCompleja}%)</span><span class="value">${sim} ${costoInstCompleja.toFixed(2)}</span></div>`;
-  }
-
-  // Tubería adicional
-  if (state.tuberiaAdicional && state.tuberiaAdicionalMetros > 0) {
-    html += `<div class="desglose-row"><span class="label">Tubería adicional: ${state.tuberiaAdicionalMetros}m × ${sim}${state.cfgTuberiaAdic}/m × ${cant} eq.</span><span class="value">${sim} ${costoTuberiaAdic.toFixed(2)}</span></div>`;
-  }
-
-  // Garantía
-  if (state.garantiaExtendida) {
-    html += `<div class="desglose-row"><span class="label">Garantía extendida × ${cant}</span><span class="value">${sim} ${costoGarantia.toFixed(2)}</span></div>`;
-  }
-
-  // Mano de obra
-  if (state.manoObraExtra && state.manoObraExtraCant > 0) {
-    html += `<div class="desglose-row"><span class="label">Mano de obra extra: ${state.manoObraExtraCant}h × ${sim}${state.cfgManoObra}/h</span><span class="value">${sim} ${costoManoObra.toFixed(2)}</span></div>`;
-  }
-
-  // Subtotal general
   html += `<div class="desglose-row subtotal"><span class="label">Subtotal general</span><span class="value">${sim} ${subtotalGeneral.toFixed(2)}</span></div>`;
-
-  // IVA
   if (state.incluirIVA) {
     html += `<div class="desglose-row"><span class="label">IGV (${state.cfgIVA}%)</span><span class="value">${sim} ${iva.toFixed(2)}</span></div>`;
   }
-
-  // TOTAL
   html += `<div class="desglose-row total"><span class="label">TOTAL</span><span class="value">${sim} ${total.toFixed(2)}</span></div>`;
-  html += `</div>`;
-
-  // Datos del equipo
-  html += `<div style="margin-top:16px;padding:14px;background:#f8f9fa;border-radius:8px;font-size:.85rem;">`;
-  html += `<strong>Equipo seleccionado:</strong><br>`;
-  html += `${eq.marca} ${eq.modelo} — ${eq.btu_texto}<br>`;
-  html += `Eficiencia: ${eq.eficiencia} | Refrigerante: ${eq.refrigerante} | ${eq.voltaje}<br>`;
-  html += `Cantidad: ${cant}`;
   html += `</div>`;
 
   resultado.innerHTML = html;
@@ -964,25 +1009,20 @@ function cargarDesdeLocalStorage() {
     const saved = localStorage.getItem('hvac_cotizador_state');
     if (!saved) return;
     const parsed = JSON.parse(saved);
-    Object.assign(state, parsed);
+    // Restaurar solo campos que existan en el nuevo state
+    if (parsed.proyectoEquipos) state.proyectoEquipos = parsed.proyectoEquipos;
+    if (parsed.proyectoMateriales) state.proyectoMateriales = parsed.proyectoMateriales;
+    if (parsed.incluirIVA !== undefined) state.incluirIVA = parsed.incluirIVA;
+    if (parsed.cfgAcometida) state.cfgAcometida = parsed.cfgAcometida;
+    if (parsed.cfgDistEC) state.cfgDistEC = parsed.cfgDistEC;
+    if (parsed.cfgPorcCompleja) state.cfgPorcCompleja = parsed.cfgPorcCompleja;
+    if (parsed.cfgTuberiaAdic) state.cfgTuberiaAdic = parsed.cfgTuberiaAdic;
+    if (parsed.cfgGarantia) state.cfgGarantia = parsed.cfgGarantia;
+    if (parsed.cfgManoObra) state.cfgManoObra = parsed.cfgManoObra;
+    if (parsed.cfgIVA) state.cfgIVA = parsed.cfgIVA;
   } catch(e) { return; }
 
-  // Restaurar valores en DOM
-  document.getElementById('selectEquipo').value = state.equipoId || '';
-  document.getElementById('cantidadValor').textContent = state.cantidad || 1;
-  document.getElementById('acometida').value = state.acometida || 0;
-  document.getElementById('distanciaEC').value = state.distanciaEC || 0;
-
-  setCheckbox('instCompleja', state.instCompleja);
-  setCheckbox('tuberiaAdicional', state.tuberiaAdicional);
-  document.getElementById('tuberiaAdicionalMetros').value = state.tuberiaAdicionalMetros || 0;
-  document.getElementById('tuberiaAdicionalMts').style.display = state.tuberiaAdicional ? 'block' : 'none';
-  setCheckbox('garantiaExtendida', state.garantiaExtendida);
-  setCheckbox('manoObraExtra', state.manoObraExtra);
-  document.getElementById('manoObraExtraCant').value = state.manoObraExtraCant || 0;
-  document.getElementById('manoObraExtraHoras').style.display = state.manoObraExtra ? 'block' : 'none';
-  setCheckbox('incluirIVA', state.incluirIVA);
-
+  // Restaurar valores de config en DOM
   document.getElementById('cfgAcometida').value = state.cfgAcometida;
   document.getElementById('cfgDistEC').value = state.cfgDistEC;
   document.getElementById('cfgPorcCompleja').value = state.cfgPorcCompleja;
@@ -990,8 +1030,7 @@ function cargarDesdeLocalStorage() {
   document.getElementById('cfgGarantia').value = state.cfgGarantia;
   document.getElementById('cfgManoObra').value = state.cfgManoObra;
   document.getElementById('cfgIVA').value = state.cfgIVA;
-
-  mostrarInfoEquipo();
+  setCheckbox('incluirIVA', state.incluirIVA);
 }
 
 function setCheckbox(id, val) {
@@ -1001,87 +1040,115 @@ function setCheckbox(id, val) {
 }
 
 function limpiarTodo() {
-  state = {
-    equipoId: '', cantidad: 1, acometida: 0, distanciaEC: 0,
-    instCompleja: false, tuberiaAdicional: false, tuberiaAdicionalMetros: 0,
-    garantiaExtendida: false, manoObraExtra: false, manoObraExtraCant: 0,
-    incluirIVA: false,
-    cfgAcometida: DB.configuracion.costo_acometida_por_metro || 150,
-    cfgDistEC: DB.configuracion.costo_distancia_evap_cond_por_metro || 80,
-    cfgPorcCompleja: 15, cfgTuberiaAdic: DB.configuracion.costo_tuberia_adicional_por_metro || 65,
-    cfgGarantia: 500, cfgManoObra: DB.configuracion.mano_obra_extra_por_hora || 80,
-    cfgIVA: DB.configuracion.iva_porcentaje || 18
-  };
+  if (!confirm('¿Limpiar toda la cotización?')) return;
+  state.proyectoEquipos = [];
+  state.proyectoMateriales = [];
+  state.incluirIVA = false;
+  state.cfgAcometida = DB.configuracion.costo_acometida_por_metro || 150;
+  state.cfgDistEC = DB.configuracion.costo_distancia_evap_cond_por_metro || 80;
+  state.cfgPorcCompleja = 15;
+  state.cfgTuberiaAdic = DB.configuracion.costo_tuberia_adicional_por_metro || 65;
+  state.cfgGarantia = 500;
+  state.cfgManoObra = DB.configuracion.mano_obra_extra_por_hora || 80;
+  state.cfgIVA = DB.configuracion.iva_porcentaje || 18;
   localStorage.removeItem('hvac_cotizador_state');
-  location.reload();
+  calcular();
+  // Reset DOM
+  setCheckbox('incluirIVA', false);
+  document.getElementById('cfgAcometida').value = state.cfgAcometida;
+  document.getElementById('cfgDistEC').value = state.cfgDistEC;
+  document.getElementById('cfgPorcCompleja').value = state.cfgPorcCompleja;
+  document.getElementById('cfgTuberiaAdic').value = state.cfgTuberiaAdic;
+  document.getElementById('cfgGarantia').value = state.cfgGarantia;
+  document.getElementById('cfgManoObra').value = state.cfgManoObra;
+  document.getElementById('cfgIVA').value = state.cfgIVA;
+  showToast('Cotización limpiada', 'success');
 }
 
 // ============================================================
 // EXPORTAR CSV
 // ============================================================
 function exportarCSV() {
-  if (!state.equipoId) { showToast('Seleccione un equipo primero', 'error'); return; }
-  const eq = DB.equipos.find(e => e.id === state.equipoId);
+  if (state.proyectoEquipos.length === 0 && state.proyectoMateriales.length === 0) {
+    showToast('Agregue equipos o materiales primero', 'error');
+    return;
+  }
   const sim = DB.configuracion.simbolo_moneda || 'S/';
   const fecha = new Date().toISOString().slice(0,10);
+  const equipos = getEquipos();
+  const materiales = getMateriales();
 
   const rows = [
     ['Campo', 'Valor'],
     ['Fecha', fecha],
     ['Empresa', DB.configuracion.empresa?.nombre || 'ZV PERU SAC'],
-    ['Equipo', `${eq.marca} ${eq.modelo}`],
-    ['Tipo', eq.tipo],
-    ['BTU', eq.btu_texto],
-    ['Eficiencia', eq.eficiencia],
-    ['Refrigerante', eq.refrigerante],
-    ['Voltaje', eq.voltaje],
-    ['Cantidad', state.cantidad],
-    ['Precio unitario', `${sim} ${eq.precio_unitario.toFixed(2)}`],
-    ['Subtotal equipo', `${sim} ${(eq.precio_unitario * state.cantidad).toFixed(2)}`],
-    ['Costo instalación base', `${sim} ${(eq.costo_instalacion_base * state.cantidad).toFixed(2)}`],
-    ['Longitud acometida (m)', state.acometida],
-    ['Costo acometida/metro', `${sim} ${state.cfgAcometida}`],
-    ['Total acometida', `${sim} ${(state.acometida * state.cfgAcometida * state.cantidad).toFixed(2)}`],
-    ['Distancia evap-cond (m)', state.distanciaEC],
-    ['Costo dist. evap-cond/metro', `${sim} ${state.cfgDistEC}`],
-    ['Total dist. evap-cond', `${sim} ${(state.distanciaEC * state.cfgDistEC * state.cantidad).toFixed(2)}`],
-    ['Instalación compleja', state.instCompleja ? 'Sí' : 'No'],
-    ['Porcentaje compleja', `${state.cfgPorcCompleja}%`],
-    ['Tubería adicional', state.tuberiaAdicional ? 'Sí' : 'No'],
-    ['Metros tubería adicional', state.tuberiaAdicionalMetros],
-    ['Costo tubería adic./metro', `${sim} ${state.cfgTuberiaAdic}`],
-    ['Garantía extendida', state.garantiaExtendida ? 'Sí' : 'No'],
-    ['Costo garantía', `${sim} ${state.cfgGarantia}`],
-    ['Mano de obra extra', state.manoObraExtra ? 'Sí' : 'No'],
-    ['Horas extra', state.manoObraExtraCant],
-    ['Costo mano de obra/hora', `${sim} ${state.cfgManoObra}`],
-    ['Incluir IGV', state.incluirIVA ? 'Sí' : 'No'],
-    ['Porcentaje IGV', `${state.cfgIVA}%`],
+    ['', ''],
+    ['=== EQUIPOS ===', ''],
   ];
 
-  // Calcular total
-  const cant = state.cantidad;
-  const precioBase = (eq.precio_unitario + eq.costo_instalacion_base) * cant;
-  const costoAcometida = state.acometida * state.cfgAcometida * cant;
-  const costoDistEC = state.distanciaEC * state.cfgDistEC * cant;
-  const costoInstCompleja = state.instCompleja ? precioBase * (state.cfgPorcCompleja / 100) : 0;
-  const costoTuberiaAdic = state.tuberiaAdicional ? state.tuberiaAdicionalMetros * state.cfgTuberiaAdic * cant : 0;
-  const costoGarantia = state.garantiaExtendida ? state.cfgGarantia * cant : 0;
-  const costoManoObra = state.manoObraExtra ? state.manoObraExtraCant * state.cfgManoObra : 0;
-  const subtotal = precioBase + costoAcometida + costoDistEC + costoInstCompleja + costoTuberiaAdic + costoGarantia + costoManoObra;
-  const iva = state.incluirIVA ? subtotal * (state.cfgIVA / 100) : 0;
-  const total = subtotal + iva;
+  let totalEquipos = 0;
+  state.proyectoEquipos.forEach((item, i) => {
+    const eq = equipos.find(e => e.id === item.equipoId);
+    if (!eq) return;
+    const cant = item.cantidad || 1;
+    const precioBase = (eq.precio_unitario + eq.costo_instalacion_base) * cant;
+    const costoAcometida = (item.acometida || 0) * state.cfgAcometida * cant;
+    const costoDistEC = (item.distanciaEC || 0) * state.cfgDistEC * cant;
+    const costoInstCompleja = item.instCompleja ? precioBase * (state.cfgPorcCompleja / 100) : 0;
+    const costoTuberiaAdic = item.tuberiaAdicional ? (item.tuberiaAdicionalMetros || 0) * state.cfgTuberiaAdic * cant : 0;
+    const costoGarantia = item.garantiaExtendida ? state.cfgGarantia * cant : 0;
+    const costoManoObra = item.manoObraExtra ? (item.manoObraExtraCant || 0) * state.cfgManoObra : 0;
+    const itemTotal = precioBase + costoAcometida + costoDistEC + costoInstCompleja + costoTuberiaAdic + costoGarantia + costoManoObra;
+    totalEquipos += itemTotal;
+    rows.push(['Equipo ' + (i+1), eq.marca + ' ' + eq.modelo]);
+    rows.push(['  Cantidad', cant]);
+    rows.push(['  Precio unitario', sim + ' ' + eq.precio_unitario.toFixed(2)]);
+    rows.push(['  Instalacion base', sim + ' ' + (eq.costo_instalacion_base * cant).toFixed(2)]);
+    rows.push(['  Acometida (m)', item.acometida || 0]);
+    rows.push(['  Dist. evap-cond (m)', item.distanciaEC || 0]);
+    rows.push(['  Instalacion compleja', item.instCompleja ? 'Si (+' + state.cfgPorcCompleja + '%)' : 'No']);
+    rows.push(['  Tuberia adicional', item.tuberiaAdicional ? 'Si (' + (item.tuberiaAdicionalMetros || 0) + 'm)' : 'No']);
+    rows.push(['  Garantia extendida', item.garantiaExtendida ? 'Si' : 'No']);
+    rows.push(['  Mano de obra extra', item.manoObraExtra ? (item.manoObraExtraCant || 0) + 'h' : 'No']);
+    rows.push(['  Subtotal equipo', sim + ' ' + itemTotal.toFixed(2)]);
+    rows.push(['', '']);
+  });
 
-  rows.push(['Subtotal general', `${sim} ${subtotal.toFixed(2)}`]);
-  rows.push(['IGV', `${sim} ${iva.toFixed(2)}`]);
-  rows.push(['TOTAL', `${sim} ${total.toFixed(2)}`]);
+  rows.push(['Subtotal equipos', sim + ' ' + totalEquipos.toFixed(2)]);
+  rows.push(['', '']);
+  rows.push(['=== MATERIALES ===', '']);
 
-  const csvContent = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  let totalMateriales = 0;
+  state.proyectoMateriales.forEach((item, i) => {
+    const mat = materiales.find(m => m.id === item.materialId);
+    if (!mat) return;
+    const cant = item.cantidad || 1;
+    const itemTotal = mat.precio_unitario * cant;
+    totalMateriales += itemTotal;
+    rows.push(['Material ' + (i+1), mat.nombre]);
+    rows.push(['  Cantidad', cant + ' ' + mat.unidad]);
+    rows.push(['  Precio unitario', sim + ' ' + mat.precio_unitario.toFixed(2)]);
+    rows.push(['  Subtotal', sim + ' ' + itemTotal.toFixed(2)]);
+    rows.push(['', '']);
+  });
+
+  rows.push(['Subtotal materiales', sim + ' ' + totalMateriales.toFixed(2)]);
+  rows.push(['', '']);
+
+  const subtotalGeneral = totalEquipos + totalMateriales;
+  const iva = state.incluirIVA ? subtotalGeneral * (state.cfgIVA / 100) : 0;
+  const total = subtotalGeneral + iva;
+
+  rows.push(['Subtotal general', sim + ' ' + subtotalGeneral.toFixed(2)]);
+  if (state.incluirIVA) rows.push(['IGV (' + state.cfgIVA + '%)', sim + ' ' + iva.toFixed(2)]);
+  rows.push(['TOTAL', sim + ' ' + total.toFixed(2)]);
+
+  const csvContent = rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\n');
   const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `cotizacion_hvac_${fecha}.csv`;
+  a.download = 'cotizacion_hvac_' + fecha + '.csv';
   a.click();
   URL.revokeObjectURL(url);
   showToast('CSV exportado correctamente', 'success');
@@ -1107,60 +1174,27 @@ function cargarCSV(e) {
         data[key] = val;
       });
 
-      // Restaurar equipo
-      if (data['Equipo']) {
-        const eq = DB.equipos.find(e => `${e.marca} ${e.modelo}` === data['Equipo']);
-        if (eq) { state.equipoId = eq.id; document.getElementById('selectEquipo').value = eq.id; }
+      // Restaurar configuración
+      if (data['Incluir IGV'] !== undefined) {
+        setCheckbox('incluirIVA', data['Incluir IGV'] === 'Sí');
+      }
+      // Restaurar config de precios
+      const cfgMap = {
+        'Costo acometida/metro': 'cfgAcometida',
+        'Costo dist. evap-cond/metro': 'cfgDistEC',
+        'Porcentaje compleja': 'cfgPorcCompleja',
+        'Costo tubería adic./metro': 'cfgTuberiaAdic',
+        'Costo garantía': 'cfgGarantia',
+        'Costo mano de obra/hora': 'cfgManoObra',
+        'Porcentaje IGV': 'cfgIVA'
+      };
+      for (const [key, cfgId] of Object.entries(cfgMap)) {
+        if (data[key]) {
+          const v = parseFloat(data[key].replace(/[^0-9.]/g, ''));
+          if (v) { state[cfgId] = v; document.getElementById(cfgId).value = v; }
+        }
       }
 
-      // Restaurar valores numéricos
-      if (data['Cantidad']) { state.cantidad = parseInt(data['Cantidad']) || 1; }
-      if (data['Longitud acometida (m)']) { state.acometida = parseFloat(data['Longitud acometida (m)']) || 0; document.getElementById('acometida').value = state.acometida; }
-      if (data['Distancia evap-cond (m)']) { state.distanciaEC = parseFloat(data['Distancia evap-cond (m)']) || 0; document.getElementById('distanciaEC').value = state.distanciaEC; }
-      if (data['Metros tubería adicional']) { state.tuberiaAdicionalMetros = parseFloat(data['Metros tubería adicional']) || 0; document.getElementById('tuberiaAdicionalMetros').value = state.tuberiaAdicionalMetros; }
-      if (data['Horas extra']) { state.manoObraExtraCant = parseFloat(data['Horas extra']) || 0; document.getElementById('manoObraExtraCant').value = state.manoObraExtraCant; }
-
-      // Checkboxes
-      setCheckbox('instCompleja', data['Instalación compleja'] === 'Sí');
-      setCheckbox('tuberiaAdicional', data['Tubería adicional'] === 'Sí');
-      document.getElementById('tuberiaAdicionalMts').style.display = state.tuberiaAdicional ? 'block' : 'none';
-      setCheckbox('garantiaExtendida', data['Garantía extendida'] === 'Sí');
-      setCheckbox('manoObraExtra', data['Mano de obra extra'] === 'Sí');
-      document.getElementById('manoObraExtraHoras').style.display = state.manoObraExtra ? 'block' : 'none';
-      setCheckbox('incluirIVA', data['Incluir IGV'] === 'Sí');
-
-      // Config
-      if (data['Costo acometida/metro']) {
-        const v = parseFloat(data['Costo acometida/metro'].replace(/[^0-9.]/g, ''));
-        if (v) { state.cfgAcometida = v; document.getElementById('cfgAcometida').value = v; }
-      }
-      if (data['Costo dist. evap-cond/metro']) {
-        const v = parseFloat(data['Costo dist. evap-cond/metro'].replace(/[^0-9.]/g, ''));
-        if (v) { state.cfgDistEC = v; document.getElementById('cfgDistEC').value = v; }
-      }
-      if (data['Porcentaje compleja']) {
-        const v = parseFloat(data['Porcentaje compleja'].replace(/[^0-9.]/g, ''));
-        if (v) { state.cfgPorcCompleja = v; document.getElementById('cfgPorcCompleja').value = v; }
-      }
-      if (data['Costo tubería adic./metro']) {
-        const v = parseFloat(data['Costo tubería adic./metro'].replace(/[^0-9.]/g, ''));
-        if (v) { state.cfgTuberiaAdic = v; document.getElementById('cfgTuberiaAdic').value = v; }
-      }
-      if (data['Costo garantía']) {
-        const v = parseFloat(data['Costo garantía'].replace(/[^0-9.]/g, ''));
-        if (v) { state.cfgGarantia = v; document.getElementById('cfgGarantia').value = v; }
-      }
-      if (data['Costo mano de obra/hora']) {
-        const v = parseFloat(data['Costo mano de obra/hora'].replace(/[^0-9.]/g, ''));
-        if (v) { state.cfgManoObra = v; document.getElementById('cfgManoObra').value = v; }
-      }
-      if (data['Porcentaje IGV']) {
-        const v = parseFloat(data['Porcentaje IGV'].replace(/[^0-9.]/g, ''));
-        if (v) { state.cfgIVA = v; document.getElementById('cfgIVA').value = v; }
-      }
-
-      document.getElementById('cantidadValor').textContent = state.cantidad;
-      mostrarInfoEquipo();
       guardarLocalStorage();
       calcular();
       showToast('Cotización cargada correctamente', 'success');
@@ -1177,97 +1211,90 @@ function cargarCSV(e) {
 // EXPORTAR PDF
 // ============================================================
 async function exportarPDF() {
-  if (!state.equipoId) { showToast('Seleccione un equipo primero', 'error'); return; }
-  const eq = DB.equipos.find(e => e.id === state.equipoId);
+  if (state.proyectoEquipos.length === 0 && state.proyectoMateriales.length === 0) {
+    showToast('Agregue equipos o materiales primero', 'error');
+    return;
+  }
   const sim = DB.configuracion.simbolo_moneda || 'S/';
   const emp = DB.configuracion.empresa || {};
   const fecha = new Date().toLocaleDateString('es-PE', { year:'numeric', month:'long', day:'numeric' });
+  const equipos = getEquipos();
+  const materiales = getMateriales();
 
-  const cant = state.cantidad;
-  const subtotalEquipo = eq.precio_unitario * cant;
-  const subtotalInstalacion = eq.costo_instalacion_base * cant;
-  const precioBase = subtotalEquipo + subtotalInstalacion;
-  const costoAcometida = state.acometida * state.cfgAcometida * cant;
-  const costoDistEC = state.distanciaEC * state.cfgDistEC * cant;
-  const costoInstCompleja = state.instCompleja ? precioBase * (state.cfgPorcCompleja / 100) : 0;
-  const costoTuberiaAdic = state.tuberiaAdicional ? state.tuberiaAdicionalMetros * state.cfgTuberiaAdic * cant : 0;
-  const costoGarantia = state.garantiaExtendida ? state.cfgGarantia * cant : 0;
-  const costoManoObra = state.manoObraExtra ? state.manoObraExtraCant * state.cfgManoObra : 0;
-  const subtotalGeneral = precioBase + costoAcometida + costoDistEC + costoInstCompleja + costoTuberiaAdic + costoGarantia + costoManoObra;
+  let totalEquipos = 0;
+  let totalMateriales = 0;
+
+  let pdfHTML = `<div style="font-family:'Segoe UI',Arial,sans-serif;max-width:700px;margin:0 auto;color:#333;">`;
+  pdfHTML += `<div style="background:linear-gradient(135deg,#1a73e8,#1557b0);color:#fff;padding:20px 28px;border-radius:8px 8px 0 0;text-align:center;">`;
+  pdfHTML += `<h1 style="margin:0;font-size:1.5rem;">❄️ ${emp.nombre || 'ZV PERU SAC'}</h1>`;
+  pdfHTML += `<p style="margin:4px 0 0;opacity:.85;font-size:.85rem;">${emp.direccion || 'Lima, Perú'} | ${emp.telefono || ''} | ${emp.email || ''}</p>`;
+  pdfHTML += `<p style="margin:2px 0 0;opacity:.7;font-size:.78rem;">RUC: ${emp.ruc || ''}</p>`;
+  pdfHTML += `</div><div style="padding:24px;border:1px solid #dadce0;border-top:none;">`;
+  pdfHTML += `<h2 style="color:#1a73e8;border-bottom:2px solid #e8f0fe;padding-bottom:8px;font-size:1.1rem;">Cotización de Proyecto de Aire Acondicionado</h2>`;
+  pdfHTML += `<p style="color:#666;font-size:.85rem;">Fecha: ${fecha}</p>`;
+
+  // Tabla de equipos
+  if (state.proyectoEquipos.length > 0) {
+    pdfHTML += `<h3 style="color:#444;margin-top:16px;">Equipos</h3>`;
+    pdfHTML += `<table style="width:100%;border-collapse:collapse;font-size:.85rem;">`;
+    pdfHTML += `<tr style="background:#1a73e8;color:#fff;"><th style="padding:8px;border:1px solid #1557b0;text-align:left;">#</th><th style="padding:8px;border:1px solid #1557b0;text-align:left;">Equipo</th><th style="padding:8px;border:1px solid #1557b0;text-align:center;">Cant.</th><th style="padding:8px;border:1px solid #1557b0;text-align:right;">Unit.</th><th style="padding:8px;border:1px solid #1557b0;text-align:right;">Total</th></tr>`;
+    state.proyectoEquipos.forEach((item, i) => {
+      const eq = equipos.find(e => e.id === item.equipoId);
+      if (!eq) return;
+      const cant = item.cantidad || 1;
+      const precioBase = (eq.precio_unitario + eq.costo_instalacion_base) * cant;
+      const costoAcometida = (item.acometeta || 0) * state.cfgAcometida * cant;
+      const costoDistEC = (item.distanciaEC || 0) * state.cfgDistEC * cant;
+      const costoInstCompleja = item.instCompleja ? precioBase * (state.cfgPorcCompleja / 100) : 0;
+      const costoTuberiaAdic = item.tuberiaAdicional ? (item.tuberiaAdicionalMetros || 0) * state.cfgTuberiaAdic * cant : 0;
+      const costoGarantia = item.garantiaExtendida ? state.cfgGarantia * cant : 0;
+      const costoManoObra = item.manoObraExtra ? (item.manoObraExtraCant || 0) * state.cfgManoObra : 0;
+      const itemTotal = precioBase + costoAcometida + costoDistEC + costoInstCompleja + costoTuberiaAdic + costoGarantia + costoManoObra;
+      totalEquipos += itemTotal;
+      pdfHTML += `<tr><td style="padding:6px;border:1px solid #ddd;">${i+1}</td><td style="padding:6px;border:1px solid #ddd;">${eq.marca} ${eq.modelo}<br><span style="font-size:.75rem;color:#888;">${eq.btu_texto || eq.btu} | ${eq.tipo}</span></td><td style="padding:6px;border:1px solid #ddd;text-align:center;">${cant}</td><td style="padding:6px;border:1px solid #ddd;text-align:right;">${sim} ${eq.precio_unitario.toFixed(2)}</td><td style="padding:6px;border:1px solid #ddd;text-align:right;">${sim} ${itemTotal.toFixed(2)}</td></tr>`;
+    });
+    pdfHTML += `<tr style="background:#f0f6ff;font-weight:700;"><td colspan="4" style="padding:8px;border:1px solid #ddd;">Subtotal equipos</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${totalEquipos.toFixed(2)}</td></tr>`;
+    pdfHTML += `</table>`;
+  }
+
+  // Tabla de materiales
+  if (state.proyectoMateriales.length > 0) {
+    pdfHTML += `<h3 style="color:#444;margin-top:16px;">Materiales</h3>`;
+    pdfHTML += `<table style="width:100%;border-collapse:collapse;font-size:.85rem;">`;
+    pdfHTML += `<tr style="background:#1a73e8;color:#fff;"><th style="padding:8px;border:1px solid #1557b0;text-align:left;">#</th><th style="padding:8px;border:1px solid #1557b0;text-align:left;">Material</th><th style="padding:8px;border:1px solid #1557b0;text-align:center;">Cant.</th><th style="padding:8px;border:1px solid #1557b0;text-align:right;">Unit.</th><th style="padding:8px;border:1px solid #1557b0;text-align:right;">Total</th></tr>`;
+    state.proyectoMateriales.forEach((item, i) => {
+      const mat = materiales.find(m => m.id === item.materialId);
+      if (!mat) return;
+      const cant = item.cantidad || 1;
+      const itemTotal = mat.precio_unitario * cant;
+      totalMateriales += itemTotal;
+      pdfHTML += `<tr><td style="padding:6px;border:1px solid #ddd;">${i+1}</td><td style="padding:6px;border:1px solid #ddd;">${mat.nombre}<br><span style="font-size:.75rem;color:#888;">${mat.categoria}</span></td><td style="padding:6px;border:1px solid #ddd;text-align:center;">${cant} ${mat.unidad}</td><td style="padding:6px;border:1px solid #ddd;text-align:right;">${sim} ${mat.precio_unitario.toFixed(2)}</td><td style="padding:6px;border:1px solid #ddd;text-align:right;">${sim} ${itemTotal.toFixed(2)}</td></tr>`;
+    });
+    pdfHTML += `<tr style="background:#f0f6ff;font-weight:700;"><td colspan="4" style="padding:8px;border:1px solid #ddd;">Subtotal materiales</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${totalMateriales.toFixed(2)}</td></tr>`;
+    pdfHTML += `</table>`;
+  }
+
+  // Totales
+  const subtotalGeneral = totalEquipos + totalMateriales;
   const iva = state.incluirIVA ? subtotalGeneral * (state.cfgIVA / 100) : 0;
   const total = subtotalGeneral + iva;
 
-  // Construir HTML para PDF
-  const pdfHTML = `
-  <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:700px;margin:0 auto;color:#333;">
-    <div style="background:linear-gradient(135deg,#1a73e8,#1557b0);color:#fff;padding:20px 28px;border-radius:8px 8px 0 0;text-align:center;">
-      <h1 style="margin:0;font-size:1.5rem;">❄️ ${emp.nombre || 'ZV PERU SAC'}</h1>
-      <p style="margin:4px 0 0;opacity:.85;font-size:.85rem;">${emp.direccion || 'Lima, Perú'} | ${emp.telefono || ''} | ${emp.email || ''}</p>
-      <p style="margin:2px 0 0;opacity:.7;font-size:.78rem;">RUC: ${emp.ruc || ''}</p>
-    </div>
-    <div style="padding:24px;border:1px solid #dadce0;border-top:none;">
-      <h2 style="color:#1a73e8;border-bottom:2px solid #e8f0fe;padding-bottom:8px;font-size:1.1rem;">Cotización de Aire Acondicionado</h2>
-      <p style="color:#666;font-size:.85rem;">Fecha: ${fecha}</p>
+  pdfHTML += `<h3 style="color:#444;margin-top:16px;">Resumen</h3>`;
+  pdfHTML += `<table style="width:100%;border-collapse:collapse;font-size:.9rem;">`;
+  if (state.proyectoEquipos.length > 0) pdfHTML += `<tr><td style="padding:8px;border:1px solid #ddd;">Subtotal equipos</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${totalEquipos.toFixed(2)}</td></tr>`;
+  if (state.proyectoMateriales.length > 0) pdfHTML += `<tr><td style="padding:8px;border:1px solid #ddd;">Subtotal materiales</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${totalMateriales.toFixed(2)}</td></tr>`;
+  pdfHTML += `<tr style="font-weight:700;"><td style="padding:8px;border:1px solid #ddd;">Subtotal general</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${subtotalGeneral.toFixed(2)}</td></tr>`;
+  if (state.incluirIVA) pdfHTML += `<tr><td style="padding:8px;border:1px solid #ddd;">IGV (${state.cfgIVA}%)</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${iva.toFixed(2)}</td></tr>`;
+  pdfHTML += `<tr style="background:#1a73e8;color:#fff;font-size:1.1rem;font-weight:700;"><td style="padding:10px;border:1px solid #1557b0;">TOTAL</td><td style="padding:10px;border:1px solid #1557b0;text-align:right;">${sim} ${total.toFixed(2)}</td></tr>`;
+  pdfHTML += `</table>`;
 
-      <h3 style="color:#444;margin-top:16px;">Equipo</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:.9rem;">
-        <tr style="background:#f0f6ff;">
-          <td style="padding:8px;border:1px solid #ddd;font-weight:600;">Equipo</td>
-          <td style="padding:8px;border:1px solid #ddd;">${eq.marca} ${eq.modelo}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px;border:1px solid #ddd;font-weight:600;">Tipo</td>
-          <td style="padding:8px;border:1px solid #ddd;">${eq.tipo} — ${eq.btu_texto}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px;border:1px solid #ddd;font-weight:600;">Eficiencia</td>
-          <td style="padding:8px;border:1px solid #ddd;">${eq.eficiencia} | ${eq.refrigerante} | ${eq.voltaje}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px;border:1px solid #ddd;font-weight:600;">Cantidad</td>
-          <td style="padding:8px;border:1px solid #ddd;">${cant}</td>
-        </tr>
-        <tr>
-          <td style="padding:8px;border:1px solid #ddd;font-weight:600;">Precio unitario</td>
-          <td style="padding:8px;border:1px solid #ddd;">${sim} ${eq.precio_unitario.toFixed(2)}</td>
-        </tr>
-      </table>
-
-      <h3 style="color:#444;margin-top:16px;">Desglose de Costos</h3>
-      <table style="width:100%;border-collapse:collapse;font-size:.9rem;">
-        <tr style="background:#1a73e8;color:#fff;">
-          <th style="padding:8px;border:1px solid #1557b0;text-align:left;">Concepto</th>
-          <th style="padding:8px;border:1px solid #1557b0;text-align:right;">Monto</th>
-        </tr>
-        <tr><td style="padding:8px;border:1px solid #ddd;">Equipo × ${cant}</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${subtotalEquipo.toFixed(2)}</td></tr>
-        <tr><td style="padding:8px;border:1px solid #ddd;">Instalación base × ${cant}</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${subtotalInstalacion.toFixed(2)}</td></tr>
-        ${state.acometida > 0 ? `<tr><td style="padding:8px;border:1px solid #ddd;">Acometida (${state.acometida}m × ${sim}${state.cfgAcometida}/m × ${cant})</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${costoAcometida.toFixed(2)}</td></tr>` : ''}
-        ${state.distanciaEC > 0 ? `<tr><td style="padding:8px;border:1px solid #ddd;">Dist. evap-cond (${state.distanciaEC}m × ${sim}${state.cfgDistEC}/m × ${cant})</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${costoDistEC.toFixed(2)}</td></tr>` : ''}
-        ${state.instCompleja ? `<tr><td style="padding:8px;border:1px solid #ddd;">Instalación compleja (+${state.cfgPorcCompleja}%)</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${costoInstCompleja.toFixed(2)}</td></tr>` : ''}
-        ${state.tuberiaAdicional && state.tuberiaAdicionalMetros > 0 ? `<tr><td style="padding:8px;border:1px solid #ddd;">Tubería adicional (${state.tuberiaAdicionalMetros}m × ${sim}${state.cfgTuberiaAdic}/m × ${cant})</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${costoTuberiaAdic.toFixed(2)}</td></tr>` : ''}
-        ${state.garantiaExtendida ? `<tr><td style="padding:8px;border:1px solid #ddd;">Garantía extendida × ${cant}</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${costoGarantia.toFixed(2)}</td></tr>` : ''}
-        ${state.manoObraExtra && state.manoObraExtraCant > 0 ? `<tr><td style="padding:8px;border:1px solid #ddd;">Mano de obra extra (${state.manoObraExtraCant}h × ${sim}${state.cfgManoObra}/h)</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${costoManoObra.toFixed(2)}</td></tr>` : ''}
-        <tr style="background:#f0f6ff;font-weight:700;">
-          <td style="padding:8px;border:1px solid #ddd;">Subtotal general</td>
-          <td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${subtotalGeneral.toFixed(2)}</td>
-        </tr>
-        ${state.incluirIVA ? `<tr><td style="padding:8px;border:1px solid #ddd;">IGV (${state.cfgIVA}%)</td><td style="padding:8px;border:1px solid #ddd;text-align:right;">${sim} ${iva.toFixed(2)}</td></tr>` : ''}
-        <tr style="background:#1a73e8;color:#fff;font-size:1.1rem;font-weight:700;">
-          <td style="padding:10px;border:1px solid #1557b0;">TOTAL</td>
-          <td style="padding:10px;border:1px solid #1557b0;text-align:right;">${sim} ${total.toFixed(2)}</td>
-        </tr>
-      </table>
-
-      <div style="margin-top:24px;padding:12px;background:#f8f9fa;border-radius:6px;font-size:.78rem;color:#888;text-align:center;">
-        <p style="margin:0;">Cotización generada automáticamente por el sistema HVAC Cotizador — ZV PERU SAC</p>
-        <p style="margin:4px 0 0;">Precios sujetos a confirmación. Válida por 15 días calendario.</p>
-      </div>
-    </div>
-  </div>`;
+  pdfHTML += `<div style="margin-top:24px;padding:12px;background:#f8f9fa;border-radius:6px;font-size:.78rem;color:#888;text-align:center;">`;
+  pdfHTML += `<p style="margin:0;">Cotización generada automáticamente por el sistema HVAC Cotizador — ZV PERU SAC</p>`;
+  pdfHTML += `<p style="margin:4px 0 0;">Precios sujetos a confirmación. Válida por 15 días calendario.</p>`;
+  pdfHTML += `</div></div></div>`;
 
   const pdfContent = document.getElementById('pdfContent');
   pdfContent.innerHTML = pdfHTML;
-
   showToast('Generando PDF...', 'success');
 
   try {
@@ -1282,15 +1309,13 @@ async function exportarPDF() {
     const ratio = pdfWidth / imgWidth;
     const totalHeight = imgHeight * ratio;
     let y = 0;
-
     while (y < totalHeight) {
       pdf.addImage(imgData, 'PNG', 0, -y, pdfWidth, totalHeight);
       y += pdfHeight;
       if (y < totalHeight) pdf.addPage();
     }
-
     const fechaFile = new Date().toISOString().slice(0,10);
-    pdf.save(`cotizacion_hvac_${fechaFile}.pdf`);
+    pdf.save('cotizacion_hvac_' + fechaFile + '.pdf');
     showToast('PDF exportado correctamente', 'success');
   } catch (err) {
     console.error(err);
@@ -1973,6 +1998,30 @@ function showToast(msg, type) {
     <div class="admin-actions-bar">
       <button class="btn btn-success btn-sm" id="btnSaveMaterial">💾 Guardar</button>
       <button class="btn btn-outline btn-sm" id="btnCancelMaterial">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SELECTOR DE EQUIPOS (para cotización) -->
+<div class="admin-modal-overlay" id="modalSelectorEquipo">
+  <div class="admin-modal selector-modal">
+    <h2>📦 Agregar Equipo al Proyecto</h2>
+    <input type="text" class="selector-search" id="searchSelectorEquipo" placeholder="Buscar equipo por marca, modelo o BTU...">
+    <div class="selector-list" id="selectorEquipoList"></div>
+    <div style="margin-top:12px;text-align:right;">
+      <button class="btn btn-outline btn-sm" id="btnCloseSelectorEquipo">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SELECTOR DE MATERIALES (para cotización) -->
+<div class="admin-modal-overlay" id="modalSelectorMaterial">
+  <div class="admin-modal selector-modal">
+    <h2>🔩 Agregar Material al Proyecto</h2>
+    <input type="text" class="selector-search" id="searchSelectorMaterial" placeholder="Buscar material por nombre o categoría...">
+    <div class="selector-list" id="selectorMaterialList"></div>
+    <div style="margin-top:12px;text-align:right;">
+      <button class="btn btn-outline btn-sm" id="btnCloseSelectorMaterial">Cerrar</button>
     </div>
   </div>
 </div>
