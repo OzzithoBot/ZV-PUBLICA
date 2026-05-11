@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestión de Equipos y Materiales — ZV PERU SAC</title>
+<style>
+:root {
+  --primary: #1a73e8; --primary-dark: #1557b0; --primary-light: #e8f0fe;
+  --accent: #34a853; --danger: #ea4335; --warning: #fbbc04;
+  --bg: #f5f7fa; --card: #ffffff; --text: #202124; --text-sec: #5f6368;
+  --border: #dadce0; --radius: 12px;
+  --shadow: 0 2px 8px rgba(60,64,67,.12); --shadow-lg: 0 4px 16px rgba(60,64,67,.18);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',system-ui,-apple-system,sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+
+/* HEADER */
+.header { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:#fff; padding:16px 24px; box-shadow:var(--shadow-lg); display:flex; justify-content:space-between; align-items:center; }
+.header h1 { font-size:1.3rem; font-weight:700; }
+.header-nav a { color:#fff; text-decoration:none; opacity:.85; margin-left:16px; font-size:.9rem; }
+.header-nav a:hover { opacity:1; text-decoration:underline; }
+
+/* LAYOUT */
+.container { max-width:1200px; margin:0 auto; padding:20px; }
+
+/* STATS CARDS */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px; margin-bottom:24px; }
+.stat-card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; text-align:center; }
+.stat-card .stat-icon { font-size:2rem; margin-bottom:8px; }
+.stat-card .stat-value { font-size:1.8rem; font-weight:700; color:var(--primary); }
+.stat-card .stat-label { font-size:.8rem; color:var(--text-sec); text-transform:uppercase; letter-spacing:.5px; }
+
+/* TABS */
+.tabs { display:flex; gap:4px; margin-bottom:0; border-bottom:2px solid var(--border); }
+.tab { padding:12px 24px; border:none; background:none; font-size:.95rem; font-weight:600; cursor:pointer; color:var(--text-sec); border-bottom:3px solid transparent; margin-bottom:-2px; transition:all .2s; }
+.tab:hover { color:var(--primary); }
+.tab.active { color:var(--primary); border-bottom-color:var(--primary); }
+
+/* PANELS */
+.panel { display:none; }
+.panel.active { display:block; }
+
+/* CARDS */
+.card { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow); padding:24px; margin-bottom:20px; }
+.card h2 { font-size:1.1rem; color:var(--primary); margin-bottom:16px; padding-bottom:8px; border-bottom:2px solid var(--primary-light); display:flex; align-items:center; gap:8px; }
+
+/* TOOLBAR */
+.toolbar { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center; }
+.toolbar input[type="text"], .toolbar select { padding:8px 14px; border:2px solid var(--border); border-radius:8px; font-size:.9rem; }
+.toolbar input:focus, .toolbar select:focus { outline:none; border-color:var(--primary); }
+.toolbar input[type="text"] { flex:1; min-width:200px; }
+
+/* BUTTONS */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:8px 16px; border:none; border-radius:8px; font-size:.85rem; font-weight:600; cursor:pointer; transition:all .2s; text-decoration:none; }
+.btn:active { transform:scale(.97); }
+.btn-primary { background:var(--primary); color:#fff; }
+.btn-primary:hover { background:var(--primary-dark); }
+.btn-success { background:var(--accent); color:#fff; }
+.btn-success:hover { background:#2d9249; }
+.btn-warning { background:var(--warning); color:#333; }
+.btn-danger { background:var(--danger); color:#fff; }
+.btn-danger:hover { background:#c5221f; }
+.btn-outline { background:transparent; color:var(--primary); border:2px solid var(--primary); }
+.btn-outline:hover { background:var(--primary-light); }
+.btn-sm { padding:5px 12px; font-size:.78rem; }
+
+/* TABLE */
+.table-wrapper { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.85rem; }
+th { background:var(--primary); color:#fff; padding:10px 8px; text-align:left; font-weight:600; position:sticky; top:0; }
+th.sortable { cursor:pointer; user-select:none; }
+th.sortable:hover { background:var(--primary-dark); }
+th .sort-icon { margin-left:4px; opacity:.5; }
+th.sorted .sort-icon { opacity:1; }
+td { padding:8px; border:1px solid var(--border); vertical-align:middle; }
+tr:hover { background:var(--primary-light); }
+tr:nth-child(even) { background:#fafafa; }
+tr:nth-child(even):hover { background:var(--primary-light); }
+.actions { display:flex; gap:4px; }
+
+/* BADGES */
+.badge { display:inline-block; padding:2px 8px; border-radius:12px; font-size:.72rem; font-weight:600; }
+.badge.split { background:#e3f2fd; color:#1565c0; }
+.badge.fancoil { background:#fce4ec; color:#c62828; }
+.badge.vrf { background:#e8f5e9; color:#2e7d32; }
+.badge.ventana { background:#fff3e0; color:#e65100; }
+.badge.material { background:#f3e5f5; color:#7b1fa2; }
+.badge.ductos { background:#e0f2f1; color:#00695c; }
+.badge.aislamiento { background:#fce4ec; color:#c62828; }
+.badge.cobre { background:#fff8e1; color:#f57f17; }
+.badge.electrico { background:#e3f2fd; color:#1565c0; }
+.badge.soporteria { background:#f1f8e9; color:#33691e; }
+.badge.accesorios { background:#fbe9e7; color:#bf360c; }
+.badge.refrigerante { background:#e8eaf6; color:#283593; }
+.badge.otro { background:#eceff1; color:#455a64; }
+
+/* MODAL */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:2000; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:var(--card); border-radius:var(--radius); box-shadow:var(--shadow-lg); width:95%; max-width:600px; max-height:90vh; overflow-y:auto; padding:28px; }
+.modal h2 { color:var(--primary); margin-bottom:20px; display:flex; align-items:center; gap:8px; }
+.modal-actions { display:flex; gap:10px; margin-top:20px; justify-content:flex-end; }
+
+/* FORM */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.form-grid .full { grid-column:1/-1; }
+.form-group { margin-bottom:12px; }
+.form-group label { display:block; font-weight:600; font-size:.8rem; color:var(--text-sec); margin-bottom:4px; text-transform:uppercase; letter-spacing:.3px; }
+.form-group input, .form-group select { width:100%; padding:8px 12px; border:2px solid var(--border); border-radius:8px; font-size:.9rem; }
+.form-group input:focus, .form-group select:focus { outline:none; border-color(--primary); box-shadow:0 0 0 3px rgba(26,115,232,.15); }
+
+/* TOAST */
+.toast { position:fixed; bottom:24px; right:24px; background:#333; color:#fff; padding:12px 20px; border-radius:8px; font-size:.9rem; box-shadow:var(--shadow-lg); z-index:9999; opacity:0; transform:translateY(20px); transition:all .3s; pointer-events:none; }
+.toast.show { opacity:1; transform:translateY(0); pointer-events:auto; }
+.toast.success { background:var(--accent); }
+.toast.error { background:var(--danger); }
+
+/* LOGIN */
+.login-box { max-width:360px; margin:60px auto; text-align:center; }
+.login-box input[type="password"] { width:100%; padding:12px 16px; border:2px solid var(--border); border-radius:8px; font-size:1rem; margin-bottom:12px; }
+.login-box input:focus { outline:none; border-color:var(--primary); }
+
+/* RESPONSIVE */
+@media(max-width:768px) {
+  .stats-grid { grid-template-columns:1fr 1fr; }
+  .form-grid { grid-template-columns:1fr; }
+  .toolbar { flex-direction:column; align-items:stretch; }
+  .toolbar input[type="text"] { min-width:auto; }
+  .header { flex-direction:column; gap:8px; }
+  .header-nav { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; }
+}
+@media(max-width:480px) {
+  .stats-grid { grid-template-columns:1fr; }
+  .tabs { flex-wrap:wrap; }
+  .tab { padding:8px 12px; font-size:.82rem; }
+}
+
+/* EMPTY STATE */
+.empty-state { text-align:center; padding:40px 20px; color:var(--text-sec); }
+.empty-state .icon { font-size:3rem; margin-bottom:12px; }
+
+/* PRICE CHANGE INDICATOR */
+.price-up { color:var(--danger); }
+.price-down { color:var(--accent); }
+.price-same { color:var(--text-sec); }
+
+/* BULK ACTIONS */
+.bulk-bar { display:none; background:var(--primary-light); padding:10px 16px; border-radius:8px; margin-bottom:12px; align-items:center; gap:10px; }
+.bulk-bar.visible { display:flex; }
+.bulk-bar span { font-weight:600; font-size:.85rem; }
+
+/* CHECKBOX COLUMN */
+.col-check { width:36px; text-align:center; }
+.col-check input { width:16px; height:16px; accent-color:var(--primary); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>🗄️ Gestión de Equipos y Materiales</h1>
+  <div class="header-nav">
+    <a href="index.html">← Volver al Cotizador</a>
+  </div>
+</div>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" class="container">
+  <div class="card login-box">
+    <h2>🔐 Acceso de Administración</h2>
+    <p style="color:var(--text-sec);margin-bottom:16px;">Ingrese la contraseña para gestionar la base de datos de equipos y materiales.</p>
+    <input type="password" id="loginPass" placeholder="Contraseña" autofocus>
+    <button class="btn btn-primary btn-block" id="loginBtn" style="width:100%;justify-content:center;">Ingresar</button>
+    <p id="loginError" style="color:var(--danger);font-size:.85rem;margin-top:8px;display:none;">Contraseña incorrecta</p>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="mainApp" style="display:none;">
+  <div class="container">
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📦</div>
+        <div class="stat-value" id="statEquipos">0</div>
+        <div class="stat-label">Equipos</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🔩</div>
+        <div class="stat-value" id="statMateriales">0</div>
+        <div class="stat-label">Materiales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🏷️</div>
+        <div class="stat-value" id="statMarcas">0</div>
+        <div class="stat-label">Marcas</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <div class="stat-value" id="statCategorias">0</div>
+        <div class="stat-label">Categorías</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" data-tab="tabEquipos">📦 Equipos</button>
+      <button class="tab" data-tab="tabMateriales">🔩 Materiales</button>
+      <button class="tab" data-tab="tabImportExport">📤 Importar / Exportar</button>
+      <button class="tab" data-tab="tabConfig">🔧 Configuración</button>
+    </div>
+
+    <!-- TAB EQUIPOS -->
+    <div class="panel active" id="tabEquipos">
+      <div class="card">
+        <div class="toolbar">
+          <input type="text" id="searchEquipos" placeholder="Buscar por marca, modelo, tipo, BTU...">
+          <select id="filterTipoEquipo">
+            <option value="">Todos los tipos</option>
+            <option value="Split Pared">Split Pared</option>
+            <option value="Fan Coil">Fan Coil</option>
+            <option value="VRF">VRF</option>
+            <option value="Ventana">Ventana</option>
+            <option value="Portátil">Portátil</option>
+          </select>
+          <select id="filterMarcaEquipo">
+            <option value="">Todas las marcas</option>
+          </select>
+          <button class="btn btn-success btn-sm" id="btnAddEquipo">➕ Agregar Equipo</button>
+        </div>
+
+        <div class="bulk-bar" id="bulkBarEquipos">
+          <span id="bulkCountEquipos">0 seleccionados</span>
+          <button class="btn btn-danger btn-sm" id="btnBulkDeleteEquipos">🗑️ Eliminar seleccionados</button>
+          <button class="btn btn-warning btn-sm" id="btnBulkPriceEquipos">💰 Ajustar precios</button>
+          <button class="btn btn-outline btn-sm" id="btnBulkClearEquipos">✕ Limpiar selección</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-check"><input type="checkbox" id="checkAllEquipos"></th>
+                <th class="sortable" data-sort="marca">Marca <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="modelo">Modelo <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="tipo">Tipo <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="btu">BTU <span class="sort-icon">↕</span></th>
+                <th>Eficiencia</th>
+                <th>Refrigerante</th>
+                <th class="sortable" data-sort="precio_unitario">Precio <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort="costo_instalacion_base">Instalación <span class="sort-icon">↕</span></th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyEquipos"></tbody>
+          </table>
+        </div>
+        <div id="emptyEquipos" class="empty-state" style="display:none;">
+          <div class="icon">📦</div>
+          <p>No hay equipos registrados. Agregue equipos para comenzar.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB MATERIALES -->
+    <div class="panel" id="tabMateriales">
+      <div class="card">
+        <div class="toolbar">
+          <input type="text" id="searchMateriales" placeholder="Buscar por nombre, categoría...">
+          <select id="filterCategoriaMaterial">
+            <option value="">Todas las categorías</option>
+            <option value="Ductos">Ductos</option>
+            <option value="Aislamiento">Aislamiento</option>
+            <option value="Tubería cobre">Tubería cobre</option>
+            <option value="Eléctrico">Eléctrico</option>
+            <option value="Soportería">Soportería</option>
+            <option value="Accesorios">Accesorios</option>
+            <option value="Refrigerante">Refrigerante</option>
+            <option value="Otro">Otro</option>
+          </select>
+          <select id="filterUnidadMaterial">
+            <option value="">Todas las unidades</option>
+            <option value="kg">kg</option>
+            <option value="m">metro</option>
+            <option value="m2">m²</option>
+            <option value="und">unidad</option>
+            <option value="par">par</option>
+            <option value="rollo">rollo</option>
+            <option value="gal">galón</option>
+          </select>
+          <button class="btn btn-success btn-sm" id="btnAddMaterial">➕ Agregar Material</button>
+        </div>
+
+        <div class="bulk-bar" id="bulkBarMateriales">
+          <span id="bulkCountMateriales">0 seleccionados</span>
+          <button class="btn btn-danger btn-sm" id="btnBulkDeleteMateriales">🗑️ Eliminar seleccionados</button>
+          <button class="btn btn-warning btn-sm" id="btnBulkPriceMateriales">💰 Ajustar precios</button>
+          <button class="btn btn-outline btn-sm" id="btnBulkClearMateriales">✕ Limpiar selección</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-check"><input type="checkbox" id="checkAllMateriales"></th>
+                <th class="sortable" data-sort-mat="nombre">Nombre <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort-mat="categoria">Categoría <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort-mat="unidad">Unidad <span class="sort-icon">↕</span></th>
+                <th class="sortable" data-sort-mat="precio_unitario">Precio Unit. <span class="sort-icon">↕</span></th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMateriales"></tbody>
+          </table>
+        </div>
+        <div id="emptyMateriales" class="empty-state" style="display:none;">
+          <div class="icon">🔩</div>
+          <p>No hay materiales registrados. Agregue materiales para comenzar.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB IMPORT/EXPORT -->
+    <div class="panel" id="tabImportExport">
+      <div class="card">
+        <h2>📤 Exportar Base de Datos</h2>
+        <p style="color:var(--text-sec);font-size:.9rem;margin-bottom:16px;">Descargue la base de datos completa o por secciones en formato JSON.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-primary" id="btnExportEquipos">📦 Exportar Equipos (JSON)</button>
+          <button class="btn btn-primary" id="btnExportMateriales">🔩 Exportar Materiales (JSON)</button>
+          <button class="btn btn-primary" id="btnExportTodo">📄 Exportar Todo (JSON)</button>
+          <button class="btn btn-warning" id="btnExportCSVEquipos">📊 Exportar Equipos (CSV)</button>
+          <button class="btn btn-warning" id="btnExportCSVMateriales">📊 Exportar Materiales (CSV)</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>📥 Importar Base de Datos</h2>
+        <p style="color:var(--text-sec);font-size:.9rem;margin-bottom:16px;">Importe datos desde archivos JSON. Los datos existentes serán <strong>reemplazados</strong>.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <div class="file-input-wrapper">
+            <button class="btn btn-success">📦 Importar Equipos</button>
+            <input type="file" id="fileImportEquipos" accept=".json">
+          </div>
+          <div class="file-input-wrapper">
+            <button class="btn btn-success">🔩 Importar Materiales</button>
+            <input type="file" id="fileImportMateriales" accept=".json">
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h2>🔄 Restaurar Datos por Defecto</h2>
+        <p style="color:var(--text-sec);font-size:.9rem;margin-bottom:16px;">Restaurar los equipos y materiales iniciales que venían con la aplicación.</p>
+        <button class="btn btn-danger" id="btnRestoreDefaults">⚠️ Restaurar datos por defecto</button>
+      </div>
+    </div>
+
+    <!-- TAB CONFIGURACIÓN -->
+    <div class="panel" id="tabConfig">
+      <div class="card">
+        <h2>🔐 Cambiar Contraseña</h2>
+        <div style="max-width:400px;">
+          <div class="form-group">
+            <label>Contraseña actual</label>
+            <input type="password" id="currentPass" placeholder="Contraseña actual">
+          </div>
+          <div class="form-group">
+            <label>Nueva contraseña</label>
+            <input type="password" id="newPass" placeholder="Nueva contraseña">
+          </div>
+          <div class="form-group">
+            <label>Confirmar nueva contraseña</label>
+            <input type="password" id="confirmPass" placeholder="Confirmar nueva contraseña">
+          </div>
+          <button class="btn btn-primary" id="btnChangePass">💾 Cambiar contraseña</button>
+        </div>
+      </div>
+      <div class="card">
+        <h2>🏢 Datos de la Empresa</h2>
+        <p style="color:var(--text-sec);font-size:.9rem;margin-bottom:16px;">Estos datos aparecerán en los PDFs de cotización.</p>
+        <div class="form-grid">
+          <div class="form-group"><label>Nombre</label><input type="text" id="cfgEmpNombre"></div>
+          <div class="form-group"><label>RUC</label><input type="text" id="cfgEmpRuc"></div>
+          <div class="form-group"><label>Dirección</label><input type="text" id="cfgEmpDir"></div>
+          <div class="form-group"><label>Teléfono</label><input type="text" id="cfgEmpTel"></div>
+          <div class="form-group"><label>Email</label><input type="email" id="cfgEmpEmail"></div>
+          <div class="form-group"><label>Web</label><input type="text" id="cfgEmpWeb"></div>
+        </div>
+        <button class="btn btn-success" id="btnSaveEmpresa">💾 Guardar datos</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL FORM EQUIPO -->
+<div class="modal-overlay" id="modalEquipo">
+  <div class="modal">
+    <h2 id="modalEquipoTitle">➕ Agregar Equipo</h2>
+    <div class="form-grid">
+      <div class="form-group"><label>ID único *</label><input type="text" id="eqId" placeholder="split-midea-12k"></div>
+      <div class="form-group"><label>Marca *</label><input type="text" id="eqMarca" placeholder="Midea"></div>
+      <div class="form-group"><label>Modelo *</label><input type="text" id="eqModelo" placeholder="MSAFB-12HRN1-QC3"></div>
+      <div class="form-group"><label>Tipo</label>
+        <select id="eqTipo">
+          <option value="Split Pared">Split Pared</option>
+          <option value="Fan Coil">Fan Coil</option>
+          <option value="VRF">VRF</option>
+          <option value="Ventana">Ventana</option>
+          <option value="Portátil">Portátil</option>
+        </select>
+      </div>
+      <div class="form-group"><label>BTU</label><input type="number" id="eqBtu" placeholder="12000"></div>
+      <div class="form-group"><label>BTU texto</label><input type="text" id="eqBtuTexto" placeholder="12,000 BTU (1 TR)"></div>
+      <div class="form-group"><label>Eficiencia</label><input type="text" id="eqEficiencia" placeholder="A+"></div>
+      <div class="form-group"><label>Refrigerante</label><input type="text" id="eqRefrigerante" placeholder="R-410A"></div>
+      <div class="form-group"><label>Voltaje</label><input type="text" id="eqVoltaje" placeholder="220V"></div>
+      <div class="form-group"><label>Precio unitario (S/) *</label><input type="number" id="eqPrecio" step="0.01" placeholder="1250.00"></div>
+      <div class="form-group"><label>Costo instalación base (S/) *</label><input type="number" id="eqInstalacion" step="0.01" placeholder="450.00"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-success" id="btnSaveEquipo">💾 Guardar</button>
+      <button class="btn btn-outline" id="btnCancelEquipo">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FORM MATERIAL -->
+<div class="modal-overlay" id="modalMaterial">
+  <div class="modal">
+    <h2 id="modalMaterialTitle">➕ Agregar Material</h2>
+    <div class="form-grid">
+      <div class="form-group"><label>ID único *</label><input type="text" id="matId" placeholder="ducto-galv"></div>
+      <div class="form-group"><label>Nombre *</label><input type="text" id="matNombre" placeholder="Ducto galvanizado"></div>
+      <div class="form-group"><label>Unidad</label>
+        <select id="matUnidad">
+          <option value="kg">kg</option>
+          <option value="m">metro</option>
+          <option value="m2">m²</option>
+          <option value="und">unidad</option>
+          <option value="par">par</option>
+          <option value="rollo">rollo</option>
+          <option value="gal">galón</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Precio unitario (S/) *</label><input type="number" id="matPrecio" step="0.01" placeholder="3.50"></div>
+      <div class="form-group full"><label>Categoría</label>
+        <select id="matCategoria">
+          <option value="Ductos">Ductos</option>
+          <option value="Aislamiento">Aislamiento</option>
+          <option value="Tubería cobre">Tubería cobre</option>
+          <option value="Eléctrico">Eléctrico</option>
+          <option value="Soportería">Soportería</option>
+          <option value="Accesorios">Accesorios</option>
+          <option value="Refrigerante">Refrigerante</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-success" id="btnSaveMaterial">💾 Guardar</button>
+      <button class="btn btn-outline" id="btnCancelMaterial">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL AJUSTE DE PRECIOS MASIVO -->
+<div class="modal-overlay" id="modalBulkPrice">
+  <div class="modal" style="max-width:400px;">
+    <h2>💰 Ajuste de Precios Masivo</h2>
+    <p style="color:var(--text-sec);font-size:.9rem;margin-bottom:16px;">Aplique un ajuste porcentual o fijo a los precios de los items seleccionados.</p>
+    <div class="form-group">
+      <label>Tipo de ajuste</label>
+      <select id="bulkPriceType">
+        <option value="percent">Porcentaje (%)</option>
+        <option value="fixed">Monto fijo (S/)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Valor del ajuste</label>
+      <input type="number" id="bulkPriceValue" step="0.01" placeholder="Ej: 10 para +10% o -5 para -5%">
+    </div>
+    <div class="form-group">
+      <label>Aplicar a</label>
+      <select id="bulkPriceTarget">
+        <option value="precio_unitario">Precio unitario</option>
+        <option value="costo_instalacion_base">Costo de instalación</option>
+        <option value="both">Ambos</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-success" id="btnApplyBulkPrice">💾 Aplicar</button>
+      <button class="btn btn-outline" id="btnCancelBulkPrice">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONSTANTES Y ESTADO
+// ============================================================
+var ADMIN_PASS_KEY = 'hvac_admin_pass';
+var MATERIALES_KEY = 'hvac_materiales';
+var EQUIPOS_KEY = 'hvac_equipos';
+var EMPRESA_KEY = 'hvac_empresa';
+
+function getAdminPass() { return localStorage.getItem(ADMIN_PASS_KEY) || 'zvperu2026'; }
+function setAdminPass(p) { localStorage.setItem(ADMIN_PASS_KEY, p); }
+
+// ============================================================
+// BASE DE DATOS COMPARTIDA (mismas funciones que index.html)
+// ============================================================
+function getEquipos() {
+  try {
+    var raw = localStorage.getItem(EQUIPOS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null; // null = usar defaults
+}
+function saveEquipos(arr) { localStorage.setItem(EQUIPOS_KEY, JSON.stringify(arr)); }
+
+function getMateriales() {
+  try {
+    var raw = localStorage.getItem(MATERIALES_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+function saveMateriales(arr) { localStorage.setItem(MATERIALES_KEY, JSON.stringify(arr)); }
+
+// Datos por defecto de equipos
+var DEFAULT_EQUIPOS = [
+  {id:"split-midea-12k",marca:"Midea",modelo:"MSAFB-12HRN1-QC3",tipo:"Split Pared",btu:12000,btu_texto:"12,000 BTU (1 TR)",eficiencia:"A+",precio_unitario:1250,costo_instalacion_base:450,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"split-midea-18k",marca:"Midea",modelo:"MSAFB-18HRN1-QC3",tipo:"Split Pared",btu:18000,btu_texto:"18,000 BTU (1.5 TR)",eficiencia:"A+",precio_unitario:1650,costo_instalacion_base:520,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"split-midea-24k",marca:"Midea",modelo:"MSAFB-24HRN1-QC3",tipo:"Split Pared",btu:24000,btu_texto:"24,000 BTU (2 TR)",eficiencia:"A+",precio_unitario:2100,costo_instalacion_base:600,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"split-midea-36k",marca:"Midea",modelo:"MSAFB-36HRN1-QC3",tipo:"Split Pared",btu:36000,btu_texto:"36,000 BTU (3 TR)",eficiencia:"A",precio_unitario:3200,costo_instalacion_base:750,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"split-lg-12k",marca:"LG",modelo:"LS-C1236HL3",tipo:"Split Pared",btu:12000,btu_texto:"12,000 BTU (1 TR)",eficiencia:"A++",precio_unitario:1450,costo_instalacion_base:450,refrigerante:"R-32",voltaje:"220V"},
+  {id:"split-lg-18k",marca:"LG",modelo:"LS-C1836HL3",tipo:"Split Pared",btu:18000,btu_texto:"18,000 BTU (1.5 TR)",eficiencia:"A++",precio_unitario:1890,costo_instalacion_base:520,refrigerante:"R-32",voltaje:"220V"},
+  {id:"split-lg-24k",marca:"LG",modelo:"LS-C2436HL3",tipo:"Split Pared",btu:24000,btu_texto:"24,000 BTU (2 TR)",eficiencia:"A++",precio_unitario:2450,costo_instalacion_base:600,refrigerante:"R-32",voltaje:"220V"},
+  {id:"split-carrier-12k",marca:"Carrier",modelo:"42TVAA012DS6-1",tipo:"Split Pared",btu:12000,btu_texto:"12,000 BTU (1 TR)",eficiencia:"A+",precio_unitario:1550,costo_instalacion_base:450,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"split-carrier-18k",marca:"Carrier",modelo:"42TVAA018DS6-1",tipo:"Split Pared",btu:18000,btu_texto:"18,000 BTU (1.5 TR)",eficiencia:"A+",precio_unitario:1980,costo_instalacion_base:520,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"split-carrier-24k",marca:"Carrier",modelo:"42TVAA024DS6-1",tipo:"Split Pared",btu:24000,btu_texto:"24,000 BTU (2 TR)",eficiencia:"A+",precio_unitario:2650,costo_instalacion_base:600,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"fcu-midea-12k",marca:"Midea",modelo:"MCD-12HRN1-Q",tipo:"Fan Coil",btu:12000,btu_texto:"12,000 BTU (1 TR)",eficiencia:"A",precio_unitario:1800,costo_instalacion_base:650,refrigerante:"Agua helada",voltaje:"220V"},
+  {id:"fcu-midea-24k",marca:"Midea",modelo:"MCD-24HRN1-Q",tipo:"Fan Coil",btu:24000,btu_texto:"24,000 BTU (2 TR)",eficiencia:"A",precio_unitario:2800,costo_instalacion_base:800,refrigerante:"Agua helada",voltaje:"220V"},
+  {id:"coldpoint-12k",marca:"Cold Point",modelo:"CP-AC12000INV",tipo:"Split Pared",btu:12000,btu_texto:"12,000 BTU (1 TR)",eficiencia:"A",precio_unitario:980,costo_instalacion_base:400,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"coldpoint-18k",marca:"Cold Point",modelo:"CP-AC18000INV",tipo:"Split Pared",btu:18000,btu_texto:"18,000 BTU (1.5 TR)",eficiencia:"A",precio_unitario:1350,costo_instalacion_base:480,refrigerante:"R-410A",voltaje:"220V"},
+  {id:"coldpoint-24k",marca:"Cold Point",modelo:"CP-AC24000INV",tipo:"Split Pared",btu:24000,btu_texto:"24,000 BTU (2 TR)",eficiencia:"A",precio_unitario:1750,costo_instalacion_base:550,refrigerante:"R-410A",voltaje:"220V"}
+];
+
+var DEFAULT_MATERIALES = [
+  {id:"ducto-galv",nombre:"Ducto galvanizado",unidad:"kg",precio_unitario:3.50,categoria:"Ductos"},
+  {id:"aislamiento-foil",nombre:"Aislamiento fibra vidrio con foil",unidad:"m2",precio_unitario:12.00,categoria:"Aislamiento"},
+  {id:"tuberia-cobre-14",nombre:'Tubería cobre 1/4"',unidad:"m",precio_unitario:18.00,categoria:"Tubería cobre"},
+  {id:"tuberia-cobre-38",nombre:'Tubería cobre 3/8"',unidad:"m",precio_unitario:25.00,categoria:"Tubería cobre"},
+  {id:"tuberia-cobre-12",nombre:'Tubería cobre 1/2"',unidad:"m",precio_unitario:35.00,categoria:"Tubería cobre"},
+  {id:"cable-12",nombre:"Cable eléctrico 12 AWG",unidad:"m",precio_unitario:2.50,categoria:"Eléctrico"},
+  {id:"cable-10",nombre:"Cable eléctrico 10 AWG",unidad:"m",precio_unitario:4.00,categoria:"Eléctrico"},
+  {id:"soporte-angulo",nombre:"Soporte angular galvanizado",unidad:"und",precio_unitario:8.50,categoria:"Soportería"},
+  {id:"difusor",nombre:"Difusor de aire",unidad:"und",precio_unitario:45.00,categoria:"Accesorios"},
+  {id:"rejilla",nombre:"Rejilla de retorno",unidad:"und",precio_unitario:35.00,categoria:"Accesorios"},
+  {id:"refrigerante-r410",nombre:"Refrigerante R-410A",unidad:"kg",precio_unitario:85.00,categoria:"Refrigerante"},
+  {id:"refrigerante-r32",nombre:"Refrigerante R-32",unidad:"kg",precio_unitario:95.00,categoria:"Refrigerante"}
+];
+
+// Obtener datos (con fallback a defaults)
+function loadEquipos() {
+  var data = getEquipos();
+  if (!data) { data = DEFAULT_EQUIPOS; saveEquipos(data); }
+  return data;
+}
+function loadMateriales() {
+  var data = getMateriales();
+  if (!data) { data = DEFAULT_MATERIALES; saveMateriales(data); }
+  return data;
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('loginPass').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+
+function doLogin() {
+  var pass = document.getElementById('loginPass').value;
+  if (pass === getAdminPass()) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainApp').style.display = 'block';
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginPass').value = '';
+    initApp();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+  }
+}
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+var equipos = [];
+var materiales = [];
+var selectedEquipos = new Set();
+var selectedMateriales = new Set();
+var sortEquipos = { field: '', asc: true };
+var sortMateriales = { field: '', asc: true };
+var currentBulkTarget = ''; // 'equipos' or 'materiales'
+
+function initApp() {
+  equipos = loadEquipos();
+  materiales = loadMateriales();
+  updateStats();
+  renderEquipos();
+  renderMateriales();
+  populateFilters();
+  loadEmpresa();
+  bindEvents();
+}
+
+// ============================================================
+// ESTADÍSTICAS
+// ============================================================
+function updateStats() {
+  document.getElementById('statEquipos').textContent = equipos.length;
+  document.getElementById('statMateriales').textContent = materiales.length;
+  var marcas = new Set(equipos.map(e => e.marca));
+  document.getElementById('statMarcas').textContent = marcas.size;
+  var cats = new Set(materiales.map(m => m.categoria));
+  document.getElementById('statCategorias').textContent = cats.size;
+}
+
+// ============================================================
+// FILTROS
+// ============================================================
+function populateFilters() {
+  var marcas = [...new Set(equipos.map(e => e.marca))].sort();
+  var sel = document.getElementById('filterMarcaEquipo');
+  sel.innerHTML = '<option value="">Todas las marcas</option>';
+  marcas.forEach(m => { sel.innerHTML += '<option value="'+m+'">'+m+'</option>'; });
+}
+
+// ============================================================
+// TABS
+// ============================================================
+document.querySelectorAll('.tab').forEach(function(tab) {
+  tab.addEventListener('click', function() {
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+    tab.classList.add('active');
+    document.getElementById(tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ============================================================
+// RENDER EQUIPOS
+// ============================================================
+function renderEquipos() {
+  var search = document.getElementById('searchEquipos').value.toLowerCase();
+  var filterTipo = document.getElementById('filterTipoEquipo').value;
+  var filterMarca = document.getElementById('filterMarcaEquipo').value;
+
+  var filtered = equipos.filter(function(eq) {
+    var matchSearch = !search || (eq.marca||'').toLowerCase().includes(search) || (eq.modelo||'').toLowerCase().includes(search) || (eq.tipo||'').toLowerCase().includes(search) || (eq.btu_texto||'').toLowerCase().includes(search) || (eq.btu||'').toString().includes(search);
+    var matchTipo = !filterTipo || eq.tipo === filterTipo;
+    var matchMarca = !filterMarca || eq.marca === filterMarca;
+    return matchSearch && matchTipo && matchMarca;
+  });
+
+  // Sort
+  if (sortEquipos.field) {
+    filtered.sort(function(a,b) {
+      var va = a[sortEquipos.field] || '';
+      var vb = b[sortEquipos.field] || '';
+      if (typeof va === 'number' && typeof vb === 'number') return sortEquipos.asc ? va - vb : vb - va;
+      va = va.toString().toLowerCase();
+      vb = vb.toString().toLowerCase();
+      return sortEquipos.asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
+  var tbody = document.getElementById('tbodyEquipos');
+  var empty = document.getElementById('emptyEquipos');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  var sim = 'S/';
+  tbody.innerHTML = filtered.map(function(eq) {
+    var badgeClass = eq.tipo === 'Fan Coil' ? 'fancoil' : eq.tipo === 'VRF' ? 'vrf' : eq.tipo === 'Ventana' ? 'ventana' : 'split';
+    var checked = selectedEquipos.has(eq.id) ? 'checked' : '';
+    return '<tr>' +
+      '<td class="col-check"><input type="checkbox" class="check-equipo" data-id="'+eq.id+'" '+checked+'></td>' +
+      '<td><strong>'+eq.marca+'</strong></td>' +
+      '<td>'+eq.modelo+'</td>' +
+      '<td><span class="badge '+badgeClass+'">'+eq.tipo+'</span></td>' +
+      '<td>'+(eq.btu_texto || eq.btu)+'</td>' +
+      '<td>'+eq.eficiencia+'</td>' +
+      '<td>'+(eq.refrigerante||'-')+'</td>' +
+      '<td><strong>'+sim+' '+eq.precio_unitario.toFixed(2)+'</strong></td>' +
+      '<td>'+sim+' '+eq.costo_instalacion_base.toFixed(2)+'</td>' +
+      '<td class="actions">' +
+        '<button class="btn btn-outline btn-sm" onclick="editEquipo(\''+eq.id+'\')">✏️</button> ' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteEquipo(\''+eq.id+'\')">🗑️</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  updateBulkBar('equipos');
+}
+
+// ============================================================
+// RENDER MATERIALES
+// ============================================================
+function renderMateriales() {
+  var search = document.getElementById('searchMateriales').value.toLowerCase();
+  var filterCat = document.getElementById('filterCategoriaMaterial').value;
+  var filterUnidad = document.getElementById('filterUnidadMaterial').value;
+
+  var filtered = materiales.filter(function(m) {
+    var matchSearch = !search || (m.nombre||'').toLowerCase().includes(search) || (m.categoria||'').toLowerCase().includes(search);
+    var matchCat = !filterCat || m.categoria === filterCat;
+    var matchUnidad = !filterUnidad || m.unidad === filterUnidad;
+    return matchSearch && matchCat && matchUnidad;
+  });
+
+  if (sortMateriales.field) {
+    filtered.sort(function(a,b) {
+      var va = a[sortMateriales.field] || '';
+      var vb = b[sortMateriales.field] || '';
+      if (typeof va === 'number' && typeof vb === 'number') return sortMateriales.asc ? va - vb : vb - va;
+      va = va.toString().toLowerCase();
+      vb = vb.toString().toLowerCase();
+      return sortMateriales.asc ? va.localeCompare(vb) : vb.localeCompare(va);
+    });
+  }
+
+  var tbody = document.getElementById('tbodyMateriales');
+  var empty = document.getElementById('emptyMateriales');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  var sim = 'S/';
+  tbody.innerHTML = filtered.map(function(m) {
+    var badgeClass = 'material';
+    var catLower = (m.categoria||'').toLowerCase();
+    if (catLower==='ductos') badgeClass='ductos';
+    else if (catLower==='aislamiento') badgeClass='aislamiento';
+    else if (catLower.includes('cobre') || catLower.includes('tuber')) badgeClass='cobre';
+    else if (catLower==='eléctrico') badgeClass='electrico';
+    else if (catLower==='soportería') badgeClass='soporteria';
+    else if (catLower==='accesorios') badgeClass='accesorios';
+    else if (catLower==='refrigerante') badgeClass='refrigerante';
+    else badgeClass='otro';
+    var checked = selectedMateriales.has(m.id) ? 'checked' : '';
+    return '<tr>' +
+      '<td class="col-check"><input type="checkbox" class="check-material" data-id="'+m.id+'" '+checked+'></td>' +
+      '<td><strong>'+m.nombre+'</strong></td>' +
+      '<td><span class="badge '+badgeClass+'">'+m.categoria+'</span></td>' +
+      '<td>'+m.unidad+'</td>' +
+      '<td><strong>'+sim+' '+m.precio_unitario.toFixed(2)+'</strong></td>' +
+      '<td class="actions">' +
+        '<button class="btn btn-outline btn-sm" onclick="editMaterial(\''+m.id+'\')">✏️</button> ' +
+        '<button class="btn btn-danger btn-sm" onclick="deleteMaterial(\''+m.id+'\')">🗑️</button>' +
+      '</td>' +
+    '</tr>';
+  }).join('');
+
+  updateBulkBar('materiales');
+}
+
+// ============================================================
+// CRUD EQUIPOS
+// ============================================================
+var editingEquipoId = null;
+
+document.getElementById('btnAddEquipo').addEventListener('click', function() {
+  editingEquipoId = null;
+  document.getElementById('modalEquipoTitle').textContent = '➕ Agregar Equipo';
+  clearEquipoForm();
+  document.getElementById('modalEquipo').classList.add('open');
+});
+
+function clearEquipoForm() {
+  ['eqId','eqMarca','eqModelo','eqTipo','eqBtu','eqBtuTexto','eqEficiencia','eqRefrigerante','eqVoltaje','eqPrecio','eqInstalacion'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('eqTipo').value = 'Split Pared';
+}
+
+function editEquipo(id) {
+  var eq = equipos.find(function(e){ return e.id === id; });
+  if (!eq) return;
+  editingEquipoId = id;
+  document.getElementById('modalEquipoTitle').textContent = '✏️ Editar Equipo';
+  document.getElementById('eqId').value = eq.id || '';
+  document.getElementById('eqMarca').value = eq.marca || '';
+  document.getElementById('eqModelo').value = eq.modelo || '';
+  document.getElementById('eqTipo').value = eq.tipo || 'Split Pared';
+  document.getElementById('eqBtu').value = eq.btu || '';
+  document.getElementById('eqBtuTexto').value = eq.btu_texto || '';
+  document.getElementById('eqEficiencia').value = eq.eficiencia || '';
+  document.getElementById('eqRefrigerante').value = eq.refrigerante || '';
+  document.getElementById('eqVoltaje').value = eq.voltaje || '';
+  document.getElementById('eqPrecio').value = eq.precio_unitario || '';
+  document.getElementById('eqInstalacion').value = eq.costo_instalacion_base || '';
+  document.getElementById('modalEquipo').classList.add('open');
+}
+
+function deleteEquipo(id) {
+  if (!confirm('¿Eliminar este equipo?')) return;
+  equipos = equipos.filter(function(e){ return e.id !== id; });
+  saveEquipos(equipos);
+  updateStats();
+  renderEquipos();
+  populateFilters();
+  showToast('Equipo eliminado', 'success');
+}
+
+document.getElementById('btnSaveEquipo').addEventListener('click', function() {
+  var id = document.getElementById('eqId').value.trim();
+  var marca = document.getElementById('eqMarca').value.trim();
+  var modelo = document.getElementById('eqModelo').value.trim();
+  var precio = parseFloat(document.getElementById('eqPrecio').value) || 0;
+  var instalacion = parseFloat(document.getElementById('eqInstalacion').value) || 0;
+  if (!id || !marca || !modelo) { showToast('Complete ID, marca y modelo', 'error'); return; }
+
+  if (editingEquipoId) {
+    var idx = equipos.findIndex(function(e){ return e.id === editingEquipoId; });
+    if (idx >= 0) {
+      equipos[idx] = {
+        id: id, marca: marca, modelo: modelo,
+        tipo: document.getElementById('eqTipo').value,
+        btu: parseInt(document.getElementById('eqBtu').value) || 0,
+        btu_texto: document.getElementById('eqBtuTexto').value.trim(),
+        eficiencia: document.getElementById('eqEficiencia').value.trim(),
+        refrigerante: document.getElementById('eqRefrigerante').value.trim(),
+        voltaje: document.getElementById('eqVoltaje').value.trim(),
+        precio_unitario: precio,
+        costo_instalacion_base: instalacion
+      };
+    }
+  } else {
+    if (equipos.find(function(e){ return e.id === id; })) { showToast('Ya existe un equipo con ese ID', 'error'); return; }
+    equipos.push({
+      id: id, marca: marca, modelo: modelo,
+      tipo: document.getElementById('eqTipo').value,
+      btu: parseInt(document.getElementById('eqBtu').value) || 0,
+      btu_texto: document.getElementById('eqBtuTexto').value.trim(),
+      eficiencia: document.getElementById('eqEficiencia').value.trim(),
+      refrigerante: document.getElementById('eqRefrigerante').value.trim(),
+      voltaje: document.getElementById('eqVoltaje').value.trim(),
+      precio_unitario: precio,
+      costo_instalacion_base: instalacion
+    });
+  }
+  saveEquipos(equipos);
+  document.getElementById('modalEquipo').classList.remove('open');
+  updateStats();
+  renderEquipos();
+  populateFilters();
+  showToast(editingEquipoId ? 'Equipo actualizado' : 'Equipo agregado', 'success');
+});
+
+document.getElementById('btnCancelEquipo').addEventListener('click', function() {
+  document.getElementById('modalEquipo').classList.remove('open');
+});
+document.getElementById('modalEquipo').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+// ============================================================
+// CRUD MATERIALES
+// ============================================================
+var editingMaterialId = null;
+
+document.getElementById('btnAddMaterial').addEventListener('click', function() {
+  editingMaterialId = null;
+  document.getElementById('modalMaterialTitle').textContent = '➕ Agregar Material';
+  clearMaterialForm();
+  document.getElementById('modalMaterial').classList.add('open');
+});
+
+function clearMaterialForm() {
+  ['matId','matNombre','matUnidad','matPrecio','matCategoria'].forEach(function(id){
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('matUnidad').value = 'und';
+  document.getElementById('matCategoria').value = 'Otro';
+}
+
+function editMaterial(id) {
+  var m = materiales.find(function(x){ return x.id === id; });
+  if (!m) return;
+  editingMaterialId = id;
+  document.getElementById('modalMaterialTitle').textContent = '✏️ Editar Material';
+  document.getElementById('matId').value = m.id || '';
+  document.getElementById('matNombre').value = m.nombre || '';
+  document.getElementById('matUnidad').value = m.unidad || 'und';
+  document.getElementById('matPrecio').value = m.precio_unitario || '';
+  document.getElementById('matCategoria').value = m.categoria || 'Otro';
+  document.getElementById('modalMaterial').classList.add('open');
+}
+
+function deleteMaterial(id) {
+  if (!confirm('¿Eliminar este material?')) return;
+  materiales = materiales.filter(function(m){ return m.id !== id; });
+  saveMateriales(materiales);
+  updateStats();
+  renderMateriales();
+  showToast('Material eliminado', 'success');
+}
+
+document.getElementById('btnSaveMaterial').addEventListener('click', function() {
+  var id = document.getElementById('matId').value.trim();
+  var nombre = document.getElementById('matNombre').value.trim();
+  var precio = parseFloat(document.getElementById('matPrecio').value) || 0;
+  if (!id || !nombre) { showToast('Complete ID y nombre', 'error'); return; }
+
+  if (editingMaterialId) {
+    var idx = materiales.findIndex(function(m){ return m.id === editingMaterialId; });
+    if (idx >= 0) {
+      materiales[idx] = {
+        id: id, nombre: nombre,
+        unidad: document.getElementById('matUnidad').value,
+        precio_unitario: precio,
+        categoria: document.getElementById('matCategoria').value
+      };
+    }
+  } else {
+    if (materiales.find(function(m){ return m.id === id; })) { showToast('Ya existe un material con ese ID', 'error'); return; }
+    materiales.push({
+      id: id, nombre: nombre,
+      unidad: document.getElementById('matUnidad').value,
+      precio_unitario: precio,
+      categoria: document.getElementById('matCategoria').value
+    });
+  }
+  saveMateriales(materiales);
+  document.getElementById('modalMaterial').classList.remove('open');
+  updateStats();
+  renderMateriales();
+  showToast(editingMaterialId ? 'Material actualizado' : 'Material agregado', 'success');
+});
+
+document.getElementById('btnCancelMaterial').addEventListener('click', function() {
+  document.getElementById('modalMaterial').classList.remove('open');
+});
+document.getElementById('modalMaterial').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+// ============================================================
+// SELECCIÓN MASIVA
+// ============================================================
+document.getElementById('checkAllEquipos').addEventListener('change', function() {
+  var checked = this.checked;
+  document.querySelectorAll('.check-equipo').forEach(function(cb) {
+    cb.checked = checked;
+    if (checked) selectedEquipos.add(cb.dataset.id);
+    else selectedEquipos.delete(cb.dataset.id);
+  });
+  updateBulkBar('equipos');
+});
+
+document.getElementById('checkAllMateriales').addEventListener('change', function() {
+  var checked = this.checked;
+  document.querySelectorAll('.check-material').forEach(function(cb) {
+    cb.checked = checked;
+    if (checked) selectedMateriales.add(cb.dataset.id);
+    else selectedMateriales.delete(cb.dataset.id);
+  });
+  updateBulkBar('materiales');
+});
+
+// Delegación de eventos para checkboxes individuales
+document.getElementById('tbodyEquipos').addEventListener('change', function(e) {
+  if (e.target.classList.contains('check-equipo')) {
+    if (e.target.checked) selectedEquipos.add(e.target.dataset.id);
+    else selectedEquipos.delete(e.target.dataset.id);
+    updateBulkBar('equipos');
+  }
+});
+
+document.getElementById('tbodyMateriales').addEventListener('change', function(e) {
+  if (e.target.classList.contains('check-material')) {
+    if (e.target.checked) selectedMateriales.add(e.target.dataset.id);
+    else selectedMateriales.delete(e.target.dataset.id);
+    updateBulkBar('materiales');
+  }
+});
+
+function updateBulkBar(type) {
+  var count, bar, countSpan;
+  if (type === 'equipos') {
+    count = selectedEquipos.size;
+    bar = document.getElementById('bulkBarEquipos');
+    countSpan = document.getElementById('bulkCountEquipos');
+  } else {
+    count = selectedMateriales.size;
+    bar = document.getElementById('bulkBarMateriales');
+    countSpan = document.getElementById('bulkCountMateriales');
+  }
+  if (count > 0) {
+    bar.classList.add('visible');
+    countSpan.textContent = count + ' seleccionado' + (count > 1 ? 's' : '');
+  } else {
+    bar.classList.remove('visible');
+  }
+}
+
+document.getElementById('btnBulkClearEquipos').addEventListener('click', function() {
+  selectedEquipos.clear();
+  document.getElementById('checkAllEquipos').checked = false;
+  renderEquipos();
+});
+document.getElementById('btnBulkClearMateriales').addEventListener('click', function() {
+  selectedMateriales.clear();
+  document.getElementById('checkAllMateriales').checked = false;
+  renderMateriales();
+});
+
+document.getElementById('btnBulkDeleteEquipos').addEventListener('click', function() {
+  if (selectedEquipos.size === 0) return;
+  if (!confirm('¿Eliminar ' + selectedEquipos.size + ' equipo(s)?')) return;
+  equipos = equipos.filter(function(e){ return !selectedEquipos.has(e.id); });
+  saveEquipos(equipos);
+  selectedEquipos.clear();
+  updateStats();
+  renderEquipos();
+  populateFilters();
+  showToast('Equipos eliminados', 'success');
+});
+
+document.getElementById('btnBulkDeleteMateriales').addEventListener('click', function() {
+  if (selectedMateriales.size === 0) return;
+  if (!confirm('¿Eliminar ' + selectedMateriales.size + ' material(es)?')) return;
+  materiales = materiales.filter(function(m){ return !selectedMateriales.has(m.id); });
+  saveMateriales(materiales);
+  selectedMateriales.clear();
+  updateStats();
+  renderMateriales();
+  showToast('Materiales eliminados', 'success');
+});
+
+// ============================================================
+// AJUSTE DE PRECIOS MASIVO
+// ============================================================
+document.getElementById('btnBulkPriceEquipos').addEventListener('click', function() {
+  if (selectedEquipos.size === 0) { showToast('Seleccione al menos un equipo', 'error'); return; }
+  currentBulkTarget = 'equipos';
+  document.getElementById('modalBulkPrice').classList.add('open');
+});
+document.getElementById('btnBulkPriceMateriales').addEventListener('click', function() {
+  if (selectedMateriales.size === 0) { showToast('Seleccione al menos un material', 'error'); return; }
+  currentBulkTarget = 'materiales';
+  document.getElementById('modalBulkPrice').classList.add('open');
+});
+
+document.getElementById('btnApplyBulkPrice').addEventListener('click', function() {
+  var type = document.getElementById('bulkPriceType').value;
+  var value = parseFloat(document.getElementById('bulkPriceValue').value) || 0;
+  var target = document.getElementById('bulkPriceTarget').value;
+  var count = 0;
+
+  if (currentBulkTarget === 'equipos') {
+    selectedEquipos.forEach(function(id) {
+      var eq = equipos.find(function(e){ return e.id === id; });
+      if (!eq) return;
+      if (target === 'precio_unitario' || target === 'both') {
+        eq.precio_unitario = type === 'percent' ? eq.precio_unitario * (1 + value/100) : eq.precio_unitario + value;
+        if (eq.precio_unitario < 0) eq.precio_unitario = 0;
+      }
+      if (target === 'costo_instalacion_base' || target === 'both') {
+        eq.costo_instalacion_base = type === 'percent' ? eq.costo_instalacion_base * (1 + value/100) : eq.costo_instalacion_base + value;
+        if (eq.costo_instalacion_base < 0) eq.costo_instalacion_base = 0;
+      }
+      count++;
+    });
+    saveEquipos(equipos);
+    renderEquipos();
+  } else {
+    selectedMateriales.forEach(function(id) {
+      var mat = materiales.find(function(m){ return m.id === id; });
+      if (!mat) return;
+      mat.precio_unitario = type === 'percent' ? mat.precio_unitario * (1 + value/100) : mat.precio_unitario + value;
+      if (mat.precio_unitario < 0) mat.precio_unitario = 0;
+      count++;
+    });
+    saveMateriales(materiales);
+    renderMateriales();
+  }
+
+  document.getElementById('modalBulkPrice').classList.remove('open');
+  document.getElementById('bulkPriceValue').value = '';
+  showToast('Precios ajustados en ' + count + ' item(s)', 'success');
+});
+
+document.getElementById('btnCancelBulkPrice').addEventListener('click', function() {
+  document.getElementById('modalBulkPrice').classList.remove('open');
+});
+document.getElementById('modalBulkPrice').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+// ============================================================
+// ORDENAMIENTO
+// ============================================================
+document.querySelectorAll('th.sortable[data-sort]').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var field = this.dataset.sort;
+    if (sortEquipos.field === field) sortEquipos.asc = !sortEquipos.asc;
+    else { sortEquipos.field = field; sortEquipos.asc = true; }
+    document.querySelectorAll('th.sortable').forEach(function(t){ t.classList.remove('sorted'); });
+    this.classList.add('sorted');
+    this.querySelector('.sort-icon').textContent = sortEquipos.asc ? '↑' : '↓';
+    renderEquipos();
+  });
+});
+
+document.querySelectorAll('th.sortable[data-sort-mat]').forEach(function(th) {
+  th.addEventListener('click', function() {
+    var field = this.dataset.sortMat;
+    if (sortMateriales.field === field) sortMateriales.asc = !sortMateriales.asc;
+    else { sortMateriales.field = field; sortMateriales.asc = true; }
+    document.querySelectorAll('th.sortable').forEach(function(t){ t.classList.remove('sorted'); });
+    this.classList.add('sorted');
+    this.querySelector('.sort-icon').textContent = sortMateriales.asc ? '↑' : '↓';
+    renderMateriales();
+  });
+});
+
+// ============================================================
+// BÚSQUEDA Y FILTROS
+// ============================================================
+document.getElementById('searchEquipos').addEventListener('input', renderEquipos);
+document.getElementById('filterTipoEquipo').addEventListener('change', renderEquipos);
+document.getElementById('filterMarcaEquipo').addEventListener('change', renderEquipos);
+document.getElementById('searchMateriales').addEventListener('input', renderMateriales);
+document.getElementById('filterCategoriaMaterial').addEventListener('change', renderMateriales);
+document.getElementById('filterUnidadMaterial').addEventListener('change', renderMateriales);
+
+// ============================================================
+// IMPORT / EXPORT
+// ============================================================
+document.getElementById('btnExportEquipos').addEventListener('click', function() {
+  downloadFile(JSON.stringify({equipos:equipos},null,2), 'equipos.json', 'application/json');
+  showToast('Equipos exportados', 'success');
+});
+document.getElementById('btnExportMateriales').addEventListener('click', function() {
+  downloadFile(JSON.stringify({materiales:materiales},null,2), 'materiales.json', 'application/json');
+  showToast('Materiales exportados', 'success');
+});
+document.getElementById('btnExportTodo').addEventListener('click', function() {
+  downloadFile(JSON.stringify({equipos:equipos,materiales:materiales},null,2), 'hvac_database.json', 'application/json');
+  showToast('Base de datos completa exportada', 'success');
+});
+
+// Export CSV
+document.getElementById('btnExportCSVEquipos').addEventListener('click', function() {
+  var rows = [['ID','Marca','Modelo','Tipo','BTU','BTU Texto','Eficiencia','Refrigerante','Voltaje','Precio Unit.','Instalación Base']];
+  equipos.forEach(function(e){ rows.push([e.id,e.marca,e.modelo,e.tipo,e.btu,e.btu_texto,e.eficiencia,e.refrigerante,e.voltaje,e.precio_unitario,e.costo_instalacion_base]); });
+  downloadCSV(rows, 'equipos.csv');
+  showToast('Equipos exportados a CSV', 'success');
+});
+document.getElementById('btnExportCSVMateriales').addEventListener('click', function() {
+  var rows = [['ID','Nombre','Unidad','Precio Unit.','Categoría']];
+  materiales.forEach(function(m){ rows.push([m.id,m.nombre,m.unidad,m.precio_unitario,m.categoria]); });
+  downloadCSV(rows, 'materiales.csv');
+  showToast('Materiales exportados a CSV', 'success');
+});
+
+function downloadCSV(rows, filename) {
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\\n');
+  downloadFile('\\uFEFF'+csv, filename, 'text/csv;charset=utf-8;');
+}
+
+// Import
+document.getElementById('fileImportEquipos').addEventListener('change', function(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (data.equipos && Array.isArray(data.equipos)) {
+        equipos = data.equipos; saveEquipos(equipos);
+        updateStats(); renderEquipos(); populateFilters();
+        showToast('Importados '+data.equipos.length+' equipos', 'success');
+      } else { showToast('Formato inválido', 'error'); }
+    } catch(err) { showToast('Error: '+err.message, 'error'); }
+  };
+  reader.readAsText(file); e.target.value = '';
+});
+
+document.getElementById('fileImportMateriales').addEventListener('change', function(e) {
+  var file = e.target.files[0]; if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    try {
+      var data = JSON.parse(ev.target.result);
+      if (data.materiales && Array.isArray(data.materiales)) {
+        materiales = data.materiales; saveMateriales(materiales);
+        updateStats(); renderMateriales();
+        showToast('Importados '+data.materiales.length+' materiales', 'success');
+      } else { showToast('Formato inválido', 'error'); }
+    } catch(err) { showToast('Error: '+err.message, 'error'); }
+  };
+  reader.readAsText(file); e.target.value = '';
+});
+
+// Restaurar defaults
+document.getElementById('btnRestoreDefaults').addEventListener('click', function() {
+  if (!confirm('¿Restaurar los datos por defecto? Esto reemplazará todos los equipos y materiales actuales.')) return;
+  equipos = JSON.parse(JSON.stringify(DEFAULT_EQUIPOS));
+  materiales = JSON.parse(JSON.stringify(DEFAULT_MATERIALES));
+  saveEquipos(equipos); saveMateriales(materiales);
+  updateStats(); renderEquipos(); renderMateriales(); populateFilters();
+  showToast('Datos restaurados por defecto', 'success');
+});
+
+function downloadFile(content, filename, type) {
+  var blob = new Blob([content], {type: type});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+function loadEmpresa() {
+  try {
+    var emp = JSON.parse(localStorage.getItem(EMPRESA_KEY)||'{}');
+  } catch(e) { emp = {}; }
+  document.getElementById('cfgEmpNombre').value = emp.nombre || 'ZV PERU SAC';
+  document.getElementById('cfgEmpRuc').value = emp.ruc || '';
+  document.getElementById('cfgEmpDir').value = emp.direccion || '';
+  document.getElementById('cfgEmpTel').value = emp.telefono || '';
+  document.getElementById('cfgEmpEmail').value = emp.email || '';
+  document.getElementById('cfgEmpWeb').value = emp.web || '';
+}
+
+document.getElementById('btnSaveEmpresa').addEventListener('click', function() {
+  var emp = {
+    nombre: document.getElementById('cfgEmpNombre').value.trim(),
+    ruc: document.getElementById('cfgEmpRuc').value.trim(),
+    direccion: document.getElementById('cfgEmpDir').value.trim(),
+    telefono: document.getElementById('cfgEmpTel').value.trim(),
+    email: document.getElementById('cfgEmpEmail').value.trim(),
+    web: document.getElementById('cfgEmpWeb').value.trim()
+  };
+  localStorage.setItem(EMPRESA_KEY, JSON.stringify(emp));
+  showToast('Datos de empresa guardados', 'success');
+});
+
+document.getElementById('btnChangePass').addEventListener('click', function() {
+  var cur = document.getElementById('currentPass').value;
+  var p1 = document.getElementById('newPass').value;
+  var p2 = document.getElementById('confirmPass').value;
+  if (cur !== getAdminPass()) { showToast('Contraseña actual incorrecta', 'error'); return; }
+  if (!p1) { showToast('Ingrese una nueva contraseña', 'error'); return; }
+  if (p1 !== p2) { showToast('Las contraseñas no coinciden', 'error'); return; }
+  setAdminPass(p1);
+  document.getElementById('currentPass').value = '';
+  document.getElementById('newPass').value = '';
+  document.getElementById('confirmPass').value = '';
+  showToast('Contraseña actualizada', 'success');
+});
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast ' + (type||'') + ' show';
+  clearTimeout(t._timeout);
+  t._timeout = setTimeout(function(){ t.classList.remove('show'); }, 3000);
+}
+
+// ============================================================
+// EVENTOS GENERALES
+// ============================================================
+function bindEvents() {
+  // Cerrar modales con Escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay').forEach(function(o){ o.classList.remove('open'); });
+    }
+  });
+}
+
+// File input wrapper CSS
+var style = document.createElement('style');
+style.textContent = '.file-input-wrapper{position:relative;overflow:hidden;display:inline-block}.file-input-wrapper input[type=file]{position:absolute;left:0;top:0;opacity:0;width:100%;height:100%;cursor:pointer}';
+document.head.appendChild(style);
+</script>
+</body>
+</html>
